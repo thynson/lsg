@@ -40,4 +40,9 @@ namespace lsg
 	{
 		l.push_back(this);
 	}
+
+	void dfa_leaf_node::add_follow_nodes(const std::list<dfa_leaf_node*> &l)
+	{
+		m_follow_nodes.insert(m_follow_nodes.end(), l.begin(), l.end());
+	}
 }

@@ -69,6 +69,7 @@ namespace lsg
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
 	protected:
 		dfa_leaf_node();
+		virtual void add_follow_nodes(const std::list<dfa_leaf_node*> &l);
 	private:
 		std::list<dfa_leaf_node*> m_follow_nodes;
 	};
