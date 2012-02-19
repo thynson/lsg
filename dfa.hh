@@ -94,7 +94,10 @@ namespace lsg
 	public:
 		dfa_match_node(unsigned char ch);
 		~dfa_match_node();
-		virtual bool is_nullable();
+		virtual bool is_nullable()
+		{
+			return false;
+		}
 	private:
 		unsigned m_ch;
 	};

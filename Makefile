@@ -15,13 +15,7 @@
 #
 
 OBJS=\
-	dfa_match_node.o\
-	dfa_star_node.o\
-	dfa_or_node.o\
-	dfa_cat_node.o\
-	dfa_leaf_node.o\
 	dfa_node.o\
-	dfa_none_node.o\
 
 all: libdfa.a
 
@@ -32,7 +26,6 @@ clean:
 
 libdfa.a: $(OBJS)
 	ar rc $@ $(OBJS)
-
 
 .cc.o:
 	g++ -Wall -g -c -o $@ $<
