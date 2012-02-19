@@ -52,7 +52,6 @@ namespace lsg
 	protected:
 		// @brief Constructor
 		dfa_node();
-	private:
 	};
 
 	// @brief Stand for a DFA AST leaf node

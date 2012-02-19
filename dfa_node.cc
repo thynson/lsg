@@ -21,5 +21,9 @@ namespace lsg
 	dfa_node::dfa_node()
 	{
 	}
+
+	dfa_node::~dfa_node()
+	{
+	}
 }
 
