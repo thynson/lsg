@@ -1,0 +1,8 @@
+*.o
+*.a
+*.obj
+*.exe
+*.dll
+*.so
+*.lib
+*~
