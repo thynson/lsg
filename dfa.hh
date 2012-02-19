@@ -76,6 +76,19 @@ namespace lsg
 		std::list<dfa_node*> m_follow_nodes;
 	};
 
+
+	// @brief Stand for a DFA AST node that accept empty input
+	class dfa_none_node : public dfa_leaf_node
+	{
+	public:
+		dfa_none_node();
+		virtual ~dfa_none_node();
+
+		virtual bool is_nullable()
+		{
+			return true;
+		}
+	};
 }
 
 #endif
