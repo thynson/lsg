@@ -25,4 +25,9 @@ namespace lsg
 	dfa_leaf_node::~dfa_leaf_node()
 	{
 	}
+
+	void dfa_leaf_node::get_follow_nodes(std::list<dfa_node*> &l)
+	{
+		l.insert(l.end(), m_follow_nodes.begin(), m_follow_nodes.end());
+	}
 }
