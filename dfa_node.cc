@@ -170,5 +170,30 @@ namespace lsg
 	{
 		return true;
 	}
+
+	dfa_plus_node::dfa_plus_node(dfa_node *sub)
+		: m_sub(sub)
+	{
+		list<dfa_leaf_node*> l, r;
+		m_sub->get_last_nodes(l);
+		m_sub->get_first_nodes(r);
+
+		for (list<dfa_leaf_node*>::iterator i = l.begin();
+			 i != l.end(); ++i)
+		{
+			(*i)->add_follow_nodes(r);
+		}
+	}
+
+	void dfa_plus_node::get_first_nodes(list<dfa_leaf_node*> &l)
+	{
+		m_sub->get_first_nodes(l);
+	}
+
+	void dfa_plus_node::get_last_nodes(list<dfa_leaf_node*> &l)
+	{
+		m_sub->get_last_nodes(l);
+	}
+
 }
 

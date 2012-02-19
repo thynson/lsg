@@ -143,7 +143,22 @@ namespace lsg
 		virtual bool is_nullable();
 	private:
 		dfa_node *m_sub;
+	};
 
+	class dfa_plus_node : public dfa_node
+	{
+	public:
+		dfa_plus_node(dfa_node *sub);
+		virtual ~dfa_plus_node();
+
+		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
+		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
+		virtual bool is_nullable()
+		{
+			return false;
+		}
+	private:
+		dfa_node *m_sub;
 	};
 }
 
