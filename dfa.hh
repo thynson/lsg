@@ -88,6 +88,17 @@ namespace lsg
 		}
 	};
 
+	// @brief Stand for a DFA AST node that accept matched charactor
+	class dfa_match_node : public dfa_leaf_node
+	{
+	public:
+		dfa_match_node(unsigned char ch);
+		~dfa_match_node();
+		virtual bool is_nullable();
+	private:
+		unsigned m_ch;
+	};
+
 	// @brief Stand for a DFA AST node that catenate its two subnodes
 	class dfa_cat_node : public dfa_node
 	{
