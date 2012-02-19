@@ -52,10 +52,6 @@ namespace lsg
 	protected:
 		// @brief Constructor
 		dfa_node();
-
-		// @brief Add follow node for this node
-		// @param l Ths list of additional possible follow nodes
-		virtual void add_follow_nodes(const std::list<dfa_leaf_node*> &l) = 0;
 	private:
 	};
 
@@ -67,9 +63,12 @@ namespace lsg
 		virtual void get_follow_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
+
+		// @brief Add follow node for this node
+		// @param l Ths list of additional possible follow nodes
+		virtual void add_follow_nodes(const std::list<dfa_leaf_node*> &l);
 	protected:
 		dfa_leaf_node();
-		virtual void add_follow_nodes(const std::list<dfa_leaf_node*> &l);
 	private:
 		std::list<dfa_leaf_node*> m_follow_nodes;
 	};
