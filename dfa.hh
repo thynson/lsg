@@ -89,6 +89,20 @@ namespace lsg
 			return true;
 		}
 	};
+
+	// @brief Stand for a DFA AST node that catenate its two subnodes
+	class dfa_cat_node : public dfa_node
+	{
+	public:
+		dfa_cat_node(dfa_node *former, dfa_node *latter);
+		virtual ~dfa_cat_node();
+		virtual void get_follow_nodes(std::list<dfa_node*> &l) { }
+		virtual void get_first_nodes(std::list<dfa_node*> &l);
+		virtual void get_last_nodes(std::list<dfa_node*> &l);
+	private:
+		dfa_node *m_former;
+		dfa_node *m_latter;
+	};
 }
 
 #endif
