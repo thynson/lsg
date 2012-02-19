@@ -18,22 +18,33 @@
 
 namespace lsg
 {
+    using namespace std;
+
     dfa_cat_node::dfa_cat_node(dfa_node *former, dfa_node *latter)
         : m_former(former)
         , m_latter(latter)
     {
+        list<dfa_leaf_node*> l, r;
+        m_former->get_last_nodes(l);
+        m_latter->get_first_nodes(r);
+
+        for (list<dfa_leaf_node*>::iterator i = l.begin();
+             i != l.end(); ++i)
+        {
+            (*i)->add_follow_nodes(r);
+        }
     }
 
     dfa_cat_node::~dfa_cat_node()
     {
     }
 
-    void dfa_cat_node::get_first_nodes(std::list<dfa_leaf_node*> &l)
+    void dfa_cat_node::get_first_nodes(list<dfa_leaf_node*> &l)
     {
         m_former->get_first_nodes(l);
     }
 
-    void dfa_cat_node::get_last_nodes(std::list<dfa_leaf_node*> &l)
+    void dfa_cat_node::get_last_nodes(list<dfa_leaf_node*> &l)
     {
         m_latter->get_first_nodes(l);
     }
