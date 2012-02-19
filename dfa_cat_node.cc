@@ -24,12 +24,12 @@ namespace lsg
     {
     }
 
-    void dfa_cat_node::get_first_nodes(std::list<dfa_node*> &l)
+    void dfa_cat_node::get_first_nodes(std::list<dfa_leaf_node*> &l)
     {
         m_former->get_first_nodes(l);
     }
 
-    void dfa_cat_node::get_last_nodes(std::list<dfa_node*> &l)
+    void dfa_cat_node::get_last_nodes(std::list<dfa_leaf_node*> &l)
     {
         m_latter->get_first_nodes(l);
     }

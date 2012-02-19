@@ -27,6 +27,7 @@ namespace lsg
 {
 	// Forward declaration
 	class dfa_node;
+	class dfa_leaf_node;
 
 	// @brief Base class of a DFA AST Node
 	//
@@ -38,27 +39,23 @@ namespace lsg
 		// @brief Destructor
 		virtual ~dfa_node();
 
-		// @brief Get possible follow nodes for this node
-		// @param l A list where follow nodes will be store here
-		virtual void get_follow_nodes(std::list<dfa_node*> &l) = 0;
-
 		// @brief Get possible first nodes for this node
 		// @param l A list where first nodes will be store here
-		virtual void get_first_nodes(std::list<dfa_node*> &l) = 0;
+		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l) = 0;
 
 		// @brief Get possible last nodes for this node
 		// @param l A list where last nodes will be store here
-		virtual void get_last_nodes(std::list<dfa_node*> &l) = 0;
+		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l) = 0;
 
 		// @brief If this node accept empty input
 		virtual bool is_nullable() = 0;
 	protected:
-		// @brief Add follow node for this node
-		// @param l Ths list of additional possible follow nodes
-		virtual void add_follow_nodes(const std::list<dfa_node*> &l) = 0;
-
 		// @brief Constructor
 		dfa_node();
+
+		// @brief Add follow node for this node
+		// @param l Ths list of additional possible follow nodes
+		virtual void add_follow_nodes(const std::list<dfa_leaf_node*> &l);
 	private:
 	};
 
@@ -67,13 +64,13 @@ namespace lsg
 	{
 	public:
 		virtual ~dfa_leaf_node();
-		virtual void get_follow_nodes(std::list<dfa_node*> &l);
-		virtual void get_first_nodes(std::list<dfa_node*> &l);
-		virtual void get_last_nodes(std::list<dfa_node*> &l);
+		virtual void get_follow_nodes(std::list<dfa_leaf_node*> &l);
+		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
+		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
 	protected:
 		dfa_leaf_node();
 	private:
-		std::list<dfa_node*> m_follow_nodes;
+		std::list<dfa_leaf_node*> m_follow_nodes;
 	};
 
 
@@ -83,8 +80,8 @@ namespace lsg
 	public:
 		dfa_none_node();
 		virtual ~dfa_none_node();
-		virtual void get_first_nodes(std::list<dfa_node*> &l) { }
-		virtual void get_last_nodes(std::list<dfa_node*> &l) { }
+		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l) { }
+		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l) { }
 
 		virtual bool is_nullable()
 		{
@@ -98,9 +95,9 @@ namespace lsg
 	public:
 		dfa_cat_node(dfa_node *former, dfa_node *latter);
 		virtual ~dfa_cat_node();
-		virtual void get_follow_nodes(std::list<dfa_node*> &l) { }
-		virtual void get_first_nodes(std::list<dfa_node*> &l);
-		virtual void get_last_nodes(std::list<dfa_node*> &l);
+		virtual void get_follow_nodes(std::list<dfa_leaf_node*> &l) { }
+		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
+		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
 	private:
 		dfa_node *m_former;
 		dfa_node *m_latter;

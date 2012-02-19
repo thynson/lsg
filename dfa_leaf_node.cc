@@ -26,17 +26,17 @@ namespace lsg
 	{
 	}
 
-	void dfa_leaf_node::get_follow_nodes(std::list<dfa_node*> &l)
+	void dfa_leaf_node::get_follow_nodes(std::list<dfa_leaf_node*> &l)
 	{
 		l.insert(l.end(), m_follow_nodes.begin(), m_follow_nodes.end());
 	}
 
-	void dfa_leaf_node::get_first_nodes(std::list<dfa_node*> &l)
+	void dfa_leaf_node::get_first_nodes(std::list<dfa_leaf_node*> &l)
 	{
 		l.push_back(this);
 	}
 
-	void dfa_leaf_node::get_last_nodes(std::list<dfa_node*> &l)
+	void dfa_leaf_node::get_last_nodes(std::list<dfa_leaf_node*> &l)
 	{
 		l.push_back(this);
 	}
