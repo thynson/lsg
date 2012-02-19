@@ -61,6 +61,21 @@ namespace lsg
 		dfa_node();
 	private:
 	};
+
+	// @brief Stand for a DFA AST leaf node
+	class dfa_leaf_node : public dfa_node
+	{
+	public:
+		virtual ~dfa_leaf_node();
+		virtual void get_follow_nodes(std::list<dfa_node*> &l);
+		virtual void get_first_nodes(std::list<dfa_node*> &l);
+		virtual void get_last_nodes(std::list<dfa_node*> &l);
+	protected:
+		dfa_leaf_node();
+	private:
+		std::list<dfa_node*> m_follow_nodes;
+	};
+
 }
 
 #endif
