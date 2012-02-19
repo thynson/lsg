@@ -36,12 +36,26 @@ namespace lsg
 	{
 	public:
 		dfa_node();
+
+		// @brief Get possible follow nodes for this node
+		// @param l A list where follow nodes will be store here
 		virtual void get_follow_nodes(std::list<dfa_node*> &l) = 0;
+
+		// @brief Get possible first nodes for this node
+		// @param l A list where first nodes will be store here
 		virtual void get_first_nodes(std::list<dfa_node*> &l) = 0;
+
+		// @brief Get possible last nodes for this node
+		// @param l A list where last nodes will be store here
 		virtual void get_last_nodes(std::list<dfa_node*> &l) = 0;
+
+		// @brief If this node accept empty input
 		virtual bool is_nullable() = 0;
 	protected:
-		virtual void add_follow_nodes(std::list<dfa_node*> &l) = 0;
+
+		// @brief Add follow node for this node
+		// @param l Ths list of additional possible follow nodes
+		virtual void add_follow_nodes(const std::list<dfa_node*> &l) = 0;
 	private:
 	};
 }
