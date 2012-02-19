@@ -42,10 +42,14 @@ namespace lsg
     void dfa_cat_node::get_first_nodes(list<dfa_leaf_node*> &l)
     {
         m_former->get_first_nodes(l);
+        if (m_former->is_nullable())
+            m_latter->get_first_nodes(l);
     }
 
     void dfa_cat_node::get_last_nodes(list<dfa_leaf_node*> &l)
     {
         m_latter->get_last_nodes(l);
+        if (m_latter->is_nullable())
+            m_former->get_last_nodes(l);
     }
 }
