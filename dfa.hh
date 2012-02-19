@@ -35,6 +35,9 @@ namespace lsg
 	class dfa_node
 	{
 	public:
+		// @brief Destructor
+		virtual ~dfa_node();
+
 		// @brief Get possible follow nodes for this node
 		// @param l A list where follow nodes will be store here
 		virtual void get_follow_nodes(std::list<dfa_node*> &l) = 0;
@@ -56,7 +59,6 @@ namespace lsg
 
 		// @brief Constructor
 		dfa_node();
-
 	private:
 	};
 }
