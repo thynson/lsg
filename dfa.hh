@@ -35,8 +35,6 @@ namespace lsg
 	class dfa_node
 	{
 	public:
-		dfa_node();
-
 		// @brief Get possible follow nodes for this node
 		// @param l A list where follow nodes will be store here
 		virtual void get_follow_nodes(std::list<dfa_node*> &l) = 0;
@@ -52,10 +50,13 @@ namespace lsg
 		// @brief If this node accept empty input
 		virtual bool is_nullable() = 0;
 	protected:
-
 		// @brief Add follow node for this node
 		// @param l Ths list of additional possible follow nodes
 		virtual void add_follow_nodes(const std::list<dfa_node*> &l) = 0;
+
+		// @brief Constructor
+		dfa_node();
+
 	private:
 	};
 }
