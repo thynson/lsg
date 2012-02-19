@@ -55,7 +55,7 @@ namespace lsg
 
 		// @brief Add follow node for this node
 		// @param l Ths list of additional possible follow nodes
-		virtual void add_follow_nodes(const std::list<dfa_leaf_node*> &l);
+		virtual void add_follow_nodes(const std::list<dfa_leaf_node*> &l) = 0;
 	private:
 	};
 
