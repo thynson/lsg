@@ -115,6 +115,20 @@ namespace lsg
 		dfa_node *m_former;
 		dfa_node *m_latter;
 	};
+
+	// @brief Stand for a DFA AST node that accept empty input, or input which
+	//        match its subnode one or more times.
+	class dfa_star_node : public dfa_node
+	{
+	public:
+		dfa_star_node(dfa_node *sub);
+		virtual ~dfa_star_node();
+		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
+		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
+	private:
+		dfa_node *m_sub;
+
+	};
 }
 
 #endif

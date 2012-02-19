@@ -15,6 +15,7 @@
 #
 
 OBJS=\
+	dfa_star_node.o\
 	dfa_or_node.o\
 	dfa_cat_node.o\
 	dfa_leaf_node.o\
