@@ -24,6 +24,10 @@ namespace lsg
     {
     }
 
+    dfa_cat_node::~dfa_cat_node()
+    {
+    }
+
     void dfa_cat_node::get_first_nodes(std::list<dfa_leaf_node*> &l)
     {
         m_former->get_first_nodes(l);
