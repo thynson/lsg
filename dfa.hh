@@ -101,6 +101,20 @@ namespace lsg
 		dfa_node *m_former;
 		dfa_node *m_latter;
 	};
+
+	// @brief Stand for a DFA AST node that accept which one of its subnodes
+	//        will accept.
+	class dfa_or_node : public dfa_node
+	{
+	public:
+		dfa_or_node(dfa_node *former, dfa_node *latter);
+		virtual ~dfa_or_node();
+		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
+		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
+	private:
+		dfa_node *m_former;
+		dfa_node *m_latter;
+	};
 }
 
 #endif
