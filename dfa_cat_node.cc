@@ -46,6 +46,6 @@ namespace lsg
 
     void dfa_cat_node::get_last_nodes(list<dfa_leaf_node*> &l)
     {
-        m_latter->get_first_nodes(l);
+        m_latter->get_last_nodes(l);
     }
 }
