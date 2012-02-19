@@ -95,7 +95,6 @@ namespace lsg
 	public:
 		dfa_cat_node(dfa_node *former, dfa_node *latter);
 		virtual ~dfa_cat_node();
-		virtual void get_follow_nodes(std::list<dfa_leaf_node*> &l) { }
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
 	private:
