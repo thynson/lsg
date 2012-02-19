@@ -52,4 +52,9 @@ namespace lsg
         if (m_latter->is_nullable())
             m_former->get_last_nodes(l);
     }
+
+    bool dfa_cat_node::is_nullable()
+    {
+        return m_former->is_nullable() && m_latter->is_nullable();
+    }
 }

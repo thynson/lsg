@@ -97,6 +97,7 @@ namespace lsg
 		virtual ~dfa_cat_node();
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
+		virtual bool is_nullable();
 	private:
 		dfa_node *m_former;
 		dfa_node *m_latter;
@@ -111,6 +112,7 @@ namespace lsg
 		virtual ~dfa_or_node();
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
+		virtual bool is_nullable();
 	private:
 		dfa_node *m_former;
 		dfa_node *m_latter;
@@ -125,6 +127,7 @@ namespace lsg
 		virtual ~dfa_star_node();
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
+		virtual bool is_nullable();
 	private:
 		dfa_node *m_sub;
 

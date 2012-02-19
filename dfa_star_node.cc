@@ -48,4 +48,9 @@ namespace lsg
     {
         m_sub->get_last_nodes(l);
     }
+
+	bool dfa_star_node::is_nullable()
+	{
+		return true;
+	}
 }

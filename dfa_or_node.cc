@@ -41,4 +41,9 @@ namespace lsg
 		m_former->get_last_nodes(l);
         m_latter->get_last_nodes(l);
     }
+
+	bool dfa_or_node::is_nullable()
+	{
+		return m_former->is_nullable() || m_latter->is_nullable();
+	}
 }
