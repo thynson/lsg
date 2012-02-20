@@ -37,23 +37,26 @@ namespace lsg
 	{
 	public:
 		typedef std::list<dfa_leaf_node*> leaf_list_t;
+		typedef std::list<const dfa_leaf_node*> const_leaf_list_t;
 
 		// @brief Destructor
 		virtual ~dfa_node();
 
 		// @brief Get possible first nodes for this node
 		// @param l A list where first nodes will be store here
+		virtual void get_first_nodes(const_leaf_list_t &l) const = 0;
 		virtual void get_first_nodes(leaf_list_t &l) = 0;
 
 		// @brief Get possible last nodes for this node
 		// @param l A list where last nodes will be store here
+		virtual void get_last_nodes(const_leaf_list_t &l) const = 0;
 		virtual void get_last_nodes(leaf_list_t &l) = 0;
 
 		// @brief If this node accept empty input
-		virtual bool is_nullable() = 0;
+		virtual bool is_nullable() const = 0;
 
 		// @brief Get a copy of itself
-		virtual dfa_node *clone() = 0;
+		virtual dfa_node *clone() const = 0;
 	protected:
 		// @brief Constructor
 		dfa_node();
@@ -64,8 +67,13 @@ namespace lsg
 	{
 	public:
 		virtual ~dfa_leaf_node();
+		virtual void get_follow_nodes(const_leaf_list_t &l) const;
 		virtual void get_follow_nodes(leaf_list_t &l);
+
+		virtual void get_first_nodes(const_leaf_list_t &l) const;
 		virtual void get_first_nodes(leaf_list_t &l);
+
+		virtual void get_last_nodes(const_leaf_list_t &l) const;
 		virtual void get_last_nodes(leaf_list_t &l);
 
 		// @brief Add follow node for this node
@@ -84,15 +92,19 @@ namespace lsg
 	public:
 		dfa_none_node();
 		virtual ~dfa_none_node();
+
+		virtual void get_first_nodes(const_leaf_list_t &l) const { }
 		virtual void get_first_nodes(leaf_list_t &l) { }
+
+		virtual void get_last_nodes(const_leaf_list_t &l) const { }
 		virtual void get_last_nodes(leaf_list_t &l) { }
 
-		virtual bool is_nullable()
+		virtual bool is_nullable() const
 		{
 			return true;
 		}
 
-		virtual dfa_node *clone()
+		virtual dfa_node *clone() const
 		{
 			return new dfa_none_node();
 		}
@@ -104,12 +116,13 @@ namespace lsg
 	public:
 		dfa_match_node(unsigned char ch);
 		~dfa_match_node();
-		virtual bool is_nullable()
+
+		virtual bool is_nullable() const
 		{
 			return false;
 		}
 
-		virtual dfa_node *clone()
+		virtual dfa_node *clone() const
 		{
 			return new dfa_match_node(m_ch);
 		}
@@ -123,10 +136,15 @@ namespace lsg
 	public:
 		dfa_cat_node(dfa_node *former, dfa_node *latter);
 		virtual ~dfa_cat_node();
+
+		virtual void get_first_nodes(const_leaf_list_t &l) const;
 		virtual void get_first_nodes(leaf_list_t &l);
+
+		virtual void get_last_nodes(const_leaf_list_t &l) const;
 		virtual void get_last_nodes(leaf_list_t &l);
-		virtual bool is_nullable();
-		virtual dfa_node *clone();
+
+		virtual bool is_nullable() const;
+		virtual dfa_node *clone() const;
 	private:
 		dfa_node *m_former;
 		dfa_node *m_latter;
@@ -139,10 +157,15 @@ namespace lsg
 	public:
 		dfa_or_node(dfa_node *former, dfa_node *latter);
 		virtual ~dfa_or_node();
+
+		virtual void get_first_nodes(const_leaf_list_t &l) const;
 		virtual void get_first_nodes(leaf_list_t &l);
+
+		virtual void get_last_nodes(const_leaf_list_t &l) const;
 		virtual void get_last_nodes(leaf_list_t &l);
-		virtual bool is_nullable();
-		virtual dfa_node *clone();
+
+		virtual bool is_nullable() const;
+		virtual dfa_node *clone() const;
 	private:
 		dfa_node *m_former;
 		dfa_node *m_latter;
@@ -155,10 +178,15 @@ namespace lsg
 	public:
 		dfa_star_node(dfa_node *sub);
 		virtual ~dfa_star_node();
+
+		virtual void get_first_nodes(const_leaf_list_t &l) const;
 		virtual void get_first_nodes(leaf_list_t &l);
+
+		virtual void get_last_nodes(const_leaf_list_t &l) const;
 		virtual void get_last_nodes(leaf_list_t &l);
-		virtual dfa_node *clone();
-		virtual bool is_nullable()
+
+		virtual dfa_node *clone() const;
+		virtual bool is_nullable() const
 		{
 			return true;
 		}
