@@ -84,6 +84,8 @@ namespace lsg
 		virtual void add_follow_nodes(const leaf_list_t &l);
 
 		unsigned get_input() const;
+
+		virtual dfa_node *clone() const;
 	private:
 		leaf_list_t m_follow_nodes;
 		unsigned m_input;

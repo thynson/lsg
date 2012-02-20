@@ -87,6 +87,11 @@ namespace lsg
 		return m_input;
 	}
 
+	dfa_node *dfa_leaf_node::clone() const
+	{
+		return new dfa_leaf_node(m_input);
+	}
+
 	dfa_cat_node::dfa_cat_node(dfa_node *former, dfa_node *latter)
 		: m_former(former)
 		, m_latter(latter)
