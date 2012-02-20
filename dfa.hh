@@ -140,7 +140,10 @@ namespace lsg
 		virtual ~dfa_star_node();
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
-		virtual bool is_nullable();
+		virtual bool is_nullable()
+		{
+			return true;
+		}
 	private:
 		dfa_node *m_sub;
 	};

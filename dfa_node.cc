@@ -166,11 +166,6 @@ namespace lsg
 		m_sub->get_last_nodes(l);
 	}
 
-	bool dfa_star_node::is_nullable()
-	{
-		return true;
-	}
-
 	dfa_plus_node::dfa_plus_node(dfa_node *sub)
 		: m_sub(sub)
 	{
