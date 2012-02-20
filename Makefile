@@ -16,6 +16,7 @@
 
 OBJS=\
 	dfa_node.o\
+	dfa_machine.o\
 
 all: libdfa.a
 

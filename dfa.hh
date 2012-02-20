@@ -20,6 +20,8 @@
 #define __DFA_HH__
 
 #include <set>
+#include <map>
+#include <vector>
 
 namespace lsg
 {
@@ -132,6 +134,26 @@ namespace lsg
 		}
 	private:
 		dfa_node *m_sub;
+	};
+
+
+	class dfa_state
+	{
+	public:
+		dfa_state(unsigned id);
+		bool add_transite_path(unsigned input, dfa_state *state);
+		const std::map<unsigned, dfa_state*> &get_transit_table() const;
+	private:
+		unsigned m_id;
+		std::map<unsigned, dfa_state*> m_transit_table;
+	};
+
+	class dfa_machine
+	{
+	public:
+		dfa_machine(const dfa_node *root);
+	private:
+		static void convert(std::vector<dfa_state*> &state, const dfa_node *root);
 	};
 }
 
