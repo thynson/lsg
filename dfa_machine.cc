@@ -15,6 +15,7 @@
 //
 
 #include <memory>
+#include <algorithm>
 #include "dfa.hh"
 
 namespace lsg
@@ -43,14 +44,18 @@ namespace lsg
 			}
 		};
 
+		bool state_id_cmper(const dfa_state *lhs, const dfa_state *rhs)
+		{
+			return lhs->get_id() < rhs->get_id();
+		}
+
 		// @brief Convert a DFA AST to states set
-		dfa_state *convert_from_dfa_tree(const dfa_node *root)
+		void convert_from_dfa_tree(vector<dfa_state*> &states, const dfa_node *root)
 		{
 			const_state_map_t marked_states, unmarked_states;
 			leaf_set_t *l = new leaf_set_t(root->get_first_nodes());
 			unsigned id = 0;
 			dfa_state *current = new dfa_state(id++);
-			dfa_state *ret = current;
 
 			unmarked_states.insert(make_pair(l, current));
 
@@ -114,18 +119,30 @@ namespace lsg
 				}
 			}
 
-			return ret;
+			// Put all state into the vector, to keep track of them
+			for (const_state_map_t::iterator i = marked_states.begin();
+				 i != marked_states.end(); ++i)
+			{
+				states.push_back(i->second);
+				delete i->first;
+			}
+
+			sort(states.begin(), states.end(), state_id_cmper);
 		}
 	}
 
 	dfa_machine::dfa_machine(const dfa_node *root)
-		: m_start(convert_from_dfa_tree(root))
 	{
+		convert_from_dfa_tree(m_states, root);
 	}
 
 	dfa_machine::~dfa_machine()
 	{
-		delete m_start;
+		for (vector<dfa_state*>::iterator i = m_states.begin();
+			 i != m_states.end(); ++i)
+		{
+			delete *i;
+		}
 	}
 
 	dfa_state::dfa_state(unsigned id)
@@ -136,11 +153,6 @@ namespace lsg
 
 	dfa_state::~dfa_state()
 	{
-		for (map<unsigned, dfa_state*>::iterator i = m_transit_table.begin();
-			 i != m_transit_table.end(); ++i)
-		{
-			delete i->second;
-		}
 	}
 
 	bool dfa_state::add_transite_path(unsigned input, dfa_state *state)

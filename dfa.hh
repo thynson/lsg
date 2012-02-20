@@ -156,7 +156,7 @@ namespace lsg
 		dfa_machine(const dfa_node *root);
 		~dfa_machine();
 	private:
-		dfa_state *m_start;
+		std::vector<dfa_state*> m_states;
 	};
 }
 
