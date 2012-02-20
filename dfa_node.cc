@@ -28,7 +28,9 @@ namespace lsg
 	{
 	}
 
-	dfa_leaf_node::dfa_leaf_node()
+	dfa_leaf_node::dfa_leaf_node(unsigned input)
+		: m_follow_nodes()
+		, m_input(input)
 	{
 	}
 
@@ -48,22 +50,26 @@ namespace lsg
 
 	void dfa_leaf_node::get_first_nodes(const_leaf_list_t &l) const
 	{
-		l.push_back(this);
+		if (m_input != 0)
+			l.push_back(this);
 	}
 
 	void dfa_leaf_node::get_first_nodes(leaf_list_t &l)
 	{
-		l.push_back(this);
+		if (m_input != 0)
+			l.push_back(this);
 	}
 
 	void dfa_leaf_node::get_last_nodes(const_leaf_list_t &l) const
 	{
-		l.push_back(this);
+		if (m_input != 0)
+			l.push_back(this);
 	}
 
 	void dfa_leaf_node::get_last_nodes(leaf_list_t &l)
 	{
-		l.push_back(this);
+		if (m_input != 0)
+			l.push_back(this);
 	}
 
 	void dfa_leaf_node::add_follow_nodes(const leaf_list_t &l)
@@ -71,21 +77,14 @@ namespace lsg
 		m_follow_nodes.insert(m_follow_nodes.end(), l.begin(), l.end());
 	}
 
-	dfa_none_node::dfa_none_node()
+	bool dfa_leaf_node::is_nullable() const
 	{
+		return m_input == 0;
 	}
 
-	dfa_none_node::~dfa_none_node()
+	unsigned dfa_leaf_node::get_input() const
 	{
-	}
-
-	dfa_match_node::dfa_match_node(unsigned char ch)
-		: m_ch(ch)
-	{
-	}
-
-	dfa_match_node::~dfa_match_node()
-	{
+		return m_input;
 	}
 
 	dfa_cat_node::dfa_cat_node(dfa_node *former, dfa_node *latter)

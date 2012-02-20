@@ -66,6 +66,7 @@ namespace lsg
 	class dfa_leaf_node : public dfa_node
 	{
 	public:
+		dfa_leaf_node(unsigned input);
 		virtual ~dfa_leaf_node();
 		virtual void get_follow_nodes(const_leaf_list_t &l) const;
 		virtual void get_follow_nodes(leaf_list_t &l);
@@ -76,58 +77,16 @@ namespace lsg
 		virtual void get_last_nodes(const_leaf_list_t &l) const;
 		virtual void get_last_nodes(leaf_list_t &l);
 
+		virtual bool is_nullable() const;
+
 		// @brief Add follow node for this node
 		// @param l Ths list of additional possible follow nodes
 		virtual void add_follow_nodes(const leaf_list_t &l);
-	protected:
-		dfa_leaf_node();
+
+		unsigned get_input() const;
 	private:
 		leaf_list_t m_follow_nodes;
-	};
-
-
-	// @brief Stand for a DFA AST node that accept empty input
-	class dfa_none_node : public dfa_leaf_node
-	{
-	public:
-		dfa_none_node();
-		virtual ~dfa_none_node();
-
-		virtual void get_first_nodes(const_leaf_list_t &l) const { }
-		virtual void get_first_nodes(leaf_list_t &l) { }
-
-		virtual void get_last_nodes(const_leaf_list_t &l) const { }
-		virtual void get_last_nodes(leaf_list_t &l) { }
-
-		virtual bool is_nullable() const
-		{
-			return true;
-		}
-
-		virtual dfa_node *clone() const
-		{
-			return new dfa_none_node();
-		}
-	};
-
-	// @brief Stand for a DFA AST node that accept matched charactor
-	class dfa_match_node : public dfa_leaf_node
-	{
-	public:
-		dfa_match_node(unsigned char ch);
-		~dfa_match_node();
-
-		virtual bool is_nullable() const
-		{
-			return false;
-		}
-
-		virtual dfa_node *clone() const
-		{
-			return new dfa_match_node(m_ch);
-		}
-	private:
-		unsigned m_ch;
+		unsigned m_input;
 	};
 
 	// @brief Stand for a DFA AST node that catenate its two subnodes
