@@ -141,6 +141,7 @@ namespace lsg
 	{
 	public:
 		dfa_state(unsigned id);
+		~dfa_state();
 		bool add_transite_path(unsigned input, dfa_state *state);
 		const std::map<unsigned, dfa_state*> &get_transit_table() const;
 		unsigned get_id() const;

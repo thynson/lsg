@@ -123,10 +123,24 @@ namespace lsg
 	{
 	}
 
+	dfa_machine::~dfa_machine()
+	{
+		delete m_start;
+	}
+
 	dfa_state::dfa_state(unsigned id)
 		: m_id(id)
 		, m_transit_table()
 	{
+	}
+
+	dfa_state::~dfa_state()
+	{
+		for (map<unsigned, dfa_state*>::iterator i = m_transit_table.begin();
+			 i != m_transit_table.end(); ++i)
+		{
+			delete i->second;
+		}
 	}
 
 	bool dfa_state::add_transite_path(unsigned input, dfa_state *state)
