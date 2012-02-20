@@ -22,100 +22,129 @@ namespace lsg
 
 	using namespace std;
 
-	struct cmper;
-
-	typedef dfa_node::leaf_set_t leaf_set_t;
-
-	typedef set<leaf_set_t*, cmper, allocator<leaf_set_t*> >
-		const_state_set_t;
-
-	typedef map<leaf_set_t*, dfa_state*, cmper,
-			allocator<pair<const leaf_set_t*, dfa_state*> > >
-		const_state_map_t;
-
-	struct cmper
+	namespace
 	{
-		bool operator () (const leaf_set_t *lhs, const leaf_set_t *rhs)
+		struct cmper;
+
+		typedef dfa_node::leaf_set_t leaf_set_t;
+
+		typedef set<leaf_set_t*, cmper, allocator<leaf_set_t*> >
+			const_state_set_t;
+
+		typedef map<leaf_set_t*, dfa_state*, cmper,
+				allocator<pair<const leaf_set_t*, dfa_state*> > >
+			const_state_map_t;
+
+		struct cmper
 		{
-			return *lhs < *rhs;
-		}
-	};
-
-	// @brief Convert a DFA AST to states set
-	void dfa_machine::convert(vector<dfa_state*> &states, const dfa_node *root)
-	{
-		const_state_map_t marked_states, unmarked_states;
-		leaf_set_t *l = new leaf_set_t(root->get_first_nodes());
-		unsigned id = 0;
-		dfa_state *current = new dfa_state(id++);
-
-		unmarked_states.insert(make_pair(l, current));
-
-		while (!unmarked_states.empty())
-		{
-			leaf_set_t *s = unmarked_states.begin()->first;
-			current = unmarked_states.begin()->second;
-
-			// Move it to marked current
-			unmarked_states.erase(unmarked_states.begin());
-			marked_states.insert(make_pair(s, current));
-
-			map<unsigned, leaf_set_t*> m;
-
-			// Merge by input
-			for (leaf_set_t::iterator i = s->begin();
-				 i != s->end(); ++i)
+			bool operator () (const leaf_set_t *lhs, const leaf_set_t *rhs)
 			{
-				const dfa_leaf_node *leaf_node = *i;
+				return *lhs < *rhs;
+			}
+		};
 
-				// A leaf node is either a dfa_none_node or dfa_match_node
-				// So if it's nullable, it must be a dfa_none_node
-				if (leaf_node->is_nullable())
-					continue;
+		// @brief Convert a DFA AST to states set
+		dfa_state *convert_from_dfa_tree(const dfa_node *root)
+		{
+			const_state_map_t marked_states, unmarked_states;
+			leaf_set_t *l = new leaf_set_t(root->get_first_nodes());
+			unsigned id = 0;
+			dfa_state *current = new dfa_state(id++);
+			dfa_state *ret = current;
 
-				unsigned input = leaf_node->get_input();
-				const leaf_set_t &ref = leaf_node->get_follow_node();
+			unmarked_states.insert(make_pair(l, current));
 
-				if (m.find(input) == m.end())
+			while (!unmarked_states.empty())
+			{
+				leaf_set_t *s = unmarked_states.begin()->first;
+				current = unmarked_states.begin()->second;
+
+				// Move it to marked current
+				unmarked_states.erase(unmarked_states.begin());
+				marked_states.insert(make_pair(s, current));
+
+				map<unsigned, leaf_set_t*> m;
+
+
+
+				// Merge by input
+				for (leaf_set_t::iterator i = s->begin();
+					 i != s->end(); ++i)
 				{
-					leaf_set_t *follow_list = new leaf_set_t(ref);
-					m.insert(make_pair(input, follow_list));
-				} else {
-					m[input]->insert(ref.begin(), ref.end());
+					const dfa_leaf_node *leaf_node = *i;
+
+					// A leaf node is either a dfa_none_node or dfa_match_node
+					// So if it's nullable, it must be a dfa_none_node
+					if (leaf_node->is_nullable())
+						continue;
+
+					unsigned input = leaf_node->get_input();
+					const leaf_set_t &ref = leaf_node->get_follow_node();
+
+					if (m.find(input) == m.end())
+					{
+						leaf_set_t *follow_list = new leaf_set_t(ref);
+						m.insert(make_pair(input, follow_list));
+					} else {
+						m[input]->insert(ref.begin(), ref.end());
+					}
+				}
+
+				// For each input, add a transit path for this current
+				for (map<unsigned, leaf_set_t*>::iterator i = m.begin();
+					 i != m.end(); ++i)
+				{
+					leaf_set_t *u = i->second;
+					const_state_map_t::iterator pos;
+
+					pos = marked_states.find(u);
+
+					if (pos == marked_states.end())
+						pos = unmarked_states.find(u);
+
+					if (pos == unmarked_states.end())
+					{
+						dfa_state *new_state = new dfa_state(id++);
+						unmarked_states.insert(make_pair(u, new_state));
+						current->add_transite_path(i->first, new_state);
+					} else {
+						current->add_transite_path(i->first, pos->second);
+						delete u;
+					}
 				}
 			}
 
-			// For each input, add a transit path for this current
-			for (map<unsigned, leaf_set_t*>::iterator i = m.begin();
-				 i != m.end(); ++i)
-			{
-				leaf_set_t *u = i->second;
-				const_state_map_t::iterator pos;
-
-				pos = marked_states.find(u);
-
-				if (pos == marked_states.end())
-					pos = unmarked_states.find(u);
-
-				if (pos == unmarked_states.end()) {
-					dfa_state *new_state = new dfa_state(id++);
-					unmarked_states.insert(make_pair(u, new_state));
-					current->add_transite_path(i->first, new_state);
-				} else {
-					current->add_transite_path(i->first, pos->second);
-					delete u;
-				}
-			}
+			return ret;
 		}
+	}
 
-		states.clear();
+	dfa_machine::dfa_machine(const dfa_node *root)
+		: m_start(convert_from_dfa_tree(root))
+	{
+	}
 
-		for (const_state_map_t::iterator i = marked_states.begin();
-			 i != marked_states.end(); ++i)
-		{
-			states.push_back(i->second);
-			delete i->first;
-		}
+	dfa_state::dfa_state(unsigned id)
+		: m_id(id)
+		, m_transit_table()
+	{
+	}
+
+	bool dfa_state::add_transite_path(unsigned input, dfa_state *state)
+	{
+		if (m_transit_table.find(input) != m_transit_table.end())
+			return false;
+		m_transit_table.insert(make_pair(input, state));
+		return true;
+	}
+
+	const std::map<unsigned, dfa_state*> &dfa_state::get_transit_table() const
+	{
+		return m_transit_table;
+	}
+
+	unsigned dfa_state::get_id() const
+	{
+		return m_id;
 	}
 
 }

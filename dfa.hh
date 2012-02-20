@@ -143,6 +143,7 @@ namespace lsg
 		dfa_state(unsigned id);
 		bool add_transite_path(unsigned input, dfa_state *state);
 		const std::map<unsigned, dfa_state*> &get_transit_table() const;
+		unsigned get_id() const;
 	private:
 		unsigned m_id;
 		std::map<unsigned, dfa_state*> m_transit_table;
@@ -152,8 +153,9 @@ namespace lsg
 	{
 	public:
 		dfa_machine(const dfa_node *root);
+		~dfa_machine();
 	private:
-		static void convert(std::vector<dfa_state*> &state, const dfa_node *root);
+		dfa_state *m_start;
 	};
 }
 
