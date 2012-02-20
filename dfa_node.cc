@@ -36,22 +36,22 @@ namespace lsg
 	{
 	}
 
-	void dfa_leaf_node::get_follow_nodes(std::list<dfa_leaf_node*> &l)
+	void dfa_leaf_node::get_follow_nodes(leaf_list_t &l)
 	{
 		l.insert(l.end(), m_follow_nodes.begin(), m_follow_nodes.end());
 	}
 
-	void dfa_leaf_node::get_first_nodes(std::list<dfa_leaf_node*> &l)
+	void dfa_leaf_node::get_first_nodes(leaf_list_t &l)
 	{
 		l.push_back(this);
 	}
 
-	void dfa_leaf_node::get_last_nodes(std::list<dfa_leaf_node*> &l)
+	void dfa_leaf_node::get_last_nodes(leaf_list_t &l)
 	{
 		l.push_back(this);
 	}
 
-	void dfa_leaf_node::add_follow_nodes(const std::list<dfa_leaf_node*> &l)
+	void dfa_leaf_node::add_follow_nodes(const leaf_list_t &l)
 	{
 		m_follow_nodes.insert(m_follow_nodes.end(), l.begin(), l.end());
 	}
