@@ -111,6 +111,14 @@ namespace lsg
 		return m_former->is_nullable() && m_latter->is_nullable();
 	}
 
+	dfa_node *dfa_cat_node::clone()
+	{
+		dfa_node *l, *r;
+		l = m_former->clone();
+		r = m_latter->clone();
+		return new dfa_cat_node(l, r);
+	}
+
 	dfa_or_node::dfa_or_node(dfa_node *former, dfa_node *latter)
 		: m_former(former)
 		, m_latter(latter)
@@ -136,6 +144,14 @@ namespace lsg
 	bool dfa_or_node::is_nullable()
 	{
 		return m_former->is_nullable() || m_latter->is_nullable();
+	}
+
+	dfa_node *dfa_or_node::clone()
+	{
+		dfa_node *l, *r;
+		l = m_former->clone();
+		r = m_latter->clone();
+		return new dfa_or_node(l, r);
 	}
 
 	dfa_star_node::dfa_star_node(dfa_node *sub)
@@ -166,29 +182,10 @@ namespace lsg
 		m_sub->get_last_nodes(l);
 	}
 
-	dfa_plus_node::dfa_plus_node(dfa_node *sub)
-		: m_sub(sub)
+	dfa_node *dfa_star_node::clone()
 	{
-		list<dfa_leaf_node*> l, r;
-		m_sub->get_last_nodes(l);
-		m_sub->get_first_nodes(r);
-
-		for (list<dfa_leaf_node*>::iterator i = l.begin();
-			 i != l.end(); ++i)
-		{
-			(*i)->add_follow_nodes(r);
-		}
+		dfa_node *new_sub = m_sub->clone();
+		return new dfa_star_node(new_sub);
 	}
-
-	void dfa_plus_node::get_first_nodes(list<dfa_leaf_node*> &l)
-	{
-		m_sub->get_first_nodes(l);
-	}
-
-	void dfa_plus_node::get_last_nodes(list<dfa_leaf_node*> &l)
-	{
-		m_sub->get_last_nodes(l);
-	}
-
 }
 

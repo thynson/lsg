@@ -49,6 +49,9 @@ namespace lsg
 
 		// @brief If this node accept empty input
 		virtual bool is_nullable() = 0;
+
+		// @brief Get a copy of itself
+		virtual dfa_node *clone() = 0;
 	protected:
 		// @brief Constructor
 		dfa_node();
@@ -86,6 +89,11 @@ namespace lsg
 		{
 			return true;
 		}
+
+		virtual dfa_node *clone()
+		{
+			return new dfa_none_node();
+		}
 	};
 
 	// @brief Stand for a DFA AST node that accept matched charactor
@@ -97,6 +105,11 @@ namespace lsg
 		virtual bool is_nullable()
 		{
 			return false;
+		}
+
+		virtual dfa_node *clone()
+		{
+			return new dfa_match_node(m_ch);
 		}
 	private:
 		unsigned m_ch;
@@ -111,6 +124,7 @@ namespace lsg
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
 		virtual bool is_nullable();
+		virtual dfa_node *clone();
 	private:
 		dfa_node *m_former;
 		dfa_node *m_latter;
@@ -126,6 +140,7 @@ namespace lsg
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
 		virtual bool is_nullable();
+		virtual dfa_node *clone();
 	private:
 		dfa_node *m_former;
 		dfa_node *m_latter;
@@ -140,25 +155,10 @@ namespace lsg
 		virtual ~dfa_star_node();
 		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
 		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
+		virtual dfa_node *clone();
 		virtual bool is_nullable()
 		{
 			return true;
-		}
-	private:
-		dfa_node *m_sub;
-	};
-
-	class dfa_plus_node : public dfa_node
-	{
-	public:
-		dfa_plus_node(dfa_node *sub);
-		virtual ~dfa_plus_node();
-
-		virtual void get_first_nodes(std::list<dfa_leaf_node*> &l);
-		virtual void get_last_nodes(std::list<dfa_leaf_node*> &l);
-		virtual bool is_nullable()
-		{
-			return false;
 		}
 	private:
 		dfa_node *m_sub;
