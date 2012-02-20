@@ -109,6 +109,8 @@ namespace lsg
 
 	dfa_cat_node::~dfa_cat_node()
 	{
+		delete m_former;
+		delete m_latter;
 	}
 
 	void dfa_cat_node::get_first_nodes(const_leaf_list_t &l) const
@@ -160,6 +162,8 @@ namespace lsg
 
 	dfa_or_node::~dfa_or_node()
 	{
+		delete m_former;
+		delete m_latter;
 	}
 
 	void dfa_or_node::get_first_nodes(const_leaf_list_t &l) const
@@ -215,6 +219,7 @@ namespace lsg
 
 	dfa_star_node::~dfa_star_node()
 	{
+		delete m_sub;
 	}
 
 	void dfa_star_node::get_first_nodes(const_leaf_list_t &l) const
