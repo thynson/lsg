@@ -20,6 +20,8 @@ namespace lsg
 {
 	using namespace std;
 
+	typedef dfa_node::leaf_set_t leaf_set_t;
+
 	dfa_node::dfa_node()
 	{
 	}
@@ -28,53 +30,59 @@ namespace lsg
 	{
 	}
 
+	const leaf_set_t &dfa_node::get_first_nodes() const
+	{
+		return m_first_set;
+	}
+
+	const leaf_set_t &dfa_node::get_last_nodes() const
+	{
+		return m_last_set;
+	}
+
+	void dfa_node::add_first_node(const leaf_set_t &s)
+	{
+		m_first_set.insert(s.begin(), s.end());
+	}
+
+	void dfa_node::add_first_node(const dfa_leaf_node *n)
+	{
+		m_first_set.insert(n);
+	}
+
+	void dfa_node::add_last_node(const leaf_set_t &s)
+	{
+		m_last_set.insert(s.begin(), s.end());
+	}
+
+	void dfa_node::add_last_node(const dfa_leaf_node *n)
+	{
+		m_last_set.insert(n);
+	}
+
 	dfa_leaf_node::dfa_leaf_node(unsigned input)
 		: m_follow_nodes()
 		, m_input(input)
 	{
+		if (input != 0)
+		{
+			add_first_node(this);
+			add_last_node(this);
+		}
 	}
 
 	dfa_leaf_node::~dfa_leaf_node()
 	{
 	}
 
-	void dfa_leaf_node::get_follow_nodes(const_leaf_list_t &l) const
+	const leaf_set_t &dfa_leaf_node::get_follow_node() const
 	{
-		l.insert(l.end(), m_follow_nodes.begin(), m_follow_nodes.end());
+		return m_follow_nodes;
 	}
 
-	void dfa_leaf_node::get_follow_nodes(leaf_list_t &l)
+	void dfa_leaf_node::add_follow_node(const leaf_set_t &l)
 	{
-		l.insert(l.end(), m_follow_nodes.begin(), m_follow_nodes.end());
-	}
-
-	void dfa_leaf_node::get_first_nodes(const_leaf_list_t &l) const
-	{
-		if (m_input != 0)
-			l.push_back(this);
-	}
-
-	void dfa_leaf_node::get_first_nodes(leaf_list_t &l)
-	{
-		if (m_input != 0)
-			l.push_back(this);
-	}
-
-	void dfa_leaf_node::get_last_nodes(const_leaf_list_t &l) const
-	{
-		if (m_input != 0)
-			l.push_back(this);
-	}
-
-	void dfa_leaf_node::get_last_nodes(leaf_list_t &l)
-	{
-		if (m_input != 0)
-			l.push_back(this);
-	}
-
-	void dfa_leaf_node::add_follow_nodes(const leaf_list_t &l)
-	{
-		m_follow_nodes.insert(m_follow_nodes.end(), l.begin(), l.end());
+		m_follow_nodes.insert(l.begin(), l.end());
 	}
 
 	bool dfa_leaf_node::is_nullable() const
@@ -96,49 +104,29 @@ namespace lsg
 		: m_former(former)
 		, m_latter(latter)
 	{
-		leaf_list_t l, r;
-		m_former->get_last_nodes(l);
-		m_latter->get_first_nodes(r);
+		const leaf_set_t &l = m_former->get_last_nodes();
+		const leaf_set_t &r = m_latter->get_first_nodes();
 
-		for (leaf_list_t::iterator i = l.begin();
+		for (leaf_set_t::iterator i = l.begin();
 			 i != l.end(); ++i)
 		{
-			(*i)->add_follow_nodes(r);
+			const_cast<dfa_leaf_node*>((*i))->add_follow_node(r);
 		}
+
+		add_first_node(m_former->get_first_nodes());
+		add_last_node(m_latter->get_last_nodes());
+
+		if (m_former->is_nullable())
+			add_first_node(m_latter->get_first_nodes());
+
+		if (m_latter->is_nullable())
+			add_last_node(m_former->get_last_nodes());
 	}
 
 	dfa_cat_node::~dfa_cat_node()
 	{
 		delete m_former;
 		delete m_latter;
-	}
-
-	void dfa_cat_node::get_first_nodes(const_leaf_list_t &l) const
-	{
-		m_former->get_first_nodes(l);
-		if (m_former->is_nullable())
-			m_latter->get_first_nodes(l);
-	}
-
-	void dfa_cat_node::get_first_nodes(leaf_list_t &l)
-	{
-		m_former->get_first_nodes(l);
-		if (m_former->is_nullable())
-			m_latter->get_first_nodes(l);
-	}
-
-	void dfa_cat_node::get_last_nodes(const_leaf_list_t &l) const
-	{
-		m_latter->get_last_nodes(l);
-		if (m_latter->is_nullable())
-			m_former->get_last_nodes(l);
-	}
-
-	void dfa_cat_node::get_last_nodes(leaf_list_t &l)
-	{
-		m_latter->get_last_nodes(l);
-		if (m_latter->is_nullable())
-			m_former->get_last_nodes(l);
 	}
 
 	bool dfa_cat_node::is_nullable() const
@@ -158,36 +146,16 @@ namespace lsg
 		: m_former(former)
 		, m_latter(latter)
 	{
+		add_first_node(m_former->get_first_nodes());
+		add_first_node(m_latter->get_first_nodes());
+		add_last_node(m_former->get_last_nodes());
+		add_last_node(m_latter->get_last_nodes());
 	}
 
 	dfa_or_node::~dfa_or_node()
 	{
 		delete m_former;
 		delete m_latter;
-	}
-
-	void dfa_or_node::get_first_nodes(const_leaf_list_t &l) const
-	{
-		m_former->get_first_nodes(l);
-		m_latter->get_first_nodes(l);
-	}
-
-	void dfa_or_node::get_first_nodes(leaf_list_t &l)
-	{
-		m_former->get_first_nodes(l);
-		m_latter->get_first_nodes(l);
-	}
-
-	void dfa_or_node::get_last_nodes(const_leaf_list_t &l) const
-	{
-		m_former->get_last_nodes(l);
-		m_latter->get_last_nodes(l);
-	}
-
-	void dfa_or_node::get_last_nodes(leaf_list_t &l)
-	{
-		m_former->get_last_nodes(l);
-		m_latter->get_last_nodes(l);
 	}
 
 	bool dfa_or_node::is_nullable() const
@@ -206,40 +174,23 @@ namespace lsg
 	dfa_star_node::dfa_star_node(dfa_node *sub)
 		: m_sub(sub)
 	{
-		leaf_list_t l, r;
-		m_sub->get_last_nodes(l);
-		m_sub->get_first_nodes(r);
+		const leaf_set_t &l = m_sub->get_last_nodes();
+		const leaf_set_t &r = m_sub->get_first_nodes();
 
-		for (leaf_list_t::iterator i = l.begin();
+
+		for (leaf_set_t::iterator i = l.begin();
 			 i != l.end(); ++i)
 		{
-			(*i)->add_follow_nodes(r);
+			const_cast<dfa_leaf_node*>((*i))->add_follow_node(r);
 		}
+
+		add_first_node(r);
+		add_last_node(l);
 	}
 
 	dfa_star_node::~dfa_star_node()
 	{
 		delete m_sub;
-	}
-
-	void dfa_star_node::get_first_nodes(const_leaf_list_t &l) const
-	{
-		m_sub->get_first_nodes(l);
-	}
-
-	void dfa_star_node::get_first_nodes(leaf_list_t &l)
-	{
-		m_sub->get_first_nodes(l);
-	}
-
-	void dfa_star_node::get_last_nodes(const_leaf_list_t &l) const
-	{
-		m_sub->get_last_nodes(l);
-	}
-
-	void dfa_star_node::get_last_nodes(leaf_list_t &l)
-	{
-		m_sub->get_last_nodes(l);
 	}
 
 	dfa_node *dfa_star_node::clone() const

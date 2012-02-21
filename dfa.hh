@@ -19,9 +19,7 @@
 #ifndef __DFA_HH__
 #define __DFA_HH__
 
-#include <map>
 #include <set>
-#include <list>
 
 namespace lsg
 {
@@ -36,21 +34,16 @@ namespace lsg
 	class dfa_node
 	{
 	public:
-		typedef std::list<dfa_leaf_node*> leaf_list_t;
-		typedef std::list<const dfa_leaf_node*> const_leaf_list_t;
+		typedef std::set<const dfa_leaf_node*> leaf_set_t;
 
 		// @brief Destructor
 		virtual ~dfa_node();
 
 		// @brief Get possible first nodes for this node
-		// @param l A list where first nodes will be store here
-		virtual void get_first_nodes(const_leaf_list_t &l) const = 0;
-		virtual void get_first_nodes(leaf_list_t &l) = 0;
+		const leaf_set_t &get_first_nodes() const;
 
 		// @brief Get possible last nodes for this node
-		// @param l A list where last nodes will be store here
-		virtual void get_last_nodes(const_leaf_list_t &l) const = 0;
-		virtual void get_last_nodes(leaf_list_t &l) = 0;
+		const leaf_set_t &get_last_nodes() const;
 
 		// @brief If this node accept empty input
 		virtual bool is_nullable() const = 0;
@@ -60,6 +53,16 @@ namespace lsg
 	protected:
 		// @brief Constructor
 		dfa_node();
+
+		void add_first_node(const dfa_leaf_node *n);
+		void add_first_node(const leaf_set_t &s);
+
+		void add_last_node(const dfa_leaf_node *n);
+		void add_last_node(const leaf_set_t &s);
+
+	private:
+		leaf_set_t m_first_set;
+		leaf_set_t m_last_set;
 	};
 
 	// @brief Stand for a DFA AST leaf node
@@ -68,26 +71,20 @@ namespace lsg
 	public:
 		dfa_leaf_node(unsigned input);
 		virtual ~dfa_leaf_node();
-		virtual void get_follow_nodes(const_leaf_list_t &l) const;
-		virtual void get_follow_nodes(leaf_list_t &l);
 
-		virtual void get_first_nodes(const_leaf_list_t &l) const;
-		virtual void get_first_nodes(leaf_list_t &l);
-
-		virtual void get_last_nodes(const_leaf_list_t &l) const;
-		virtual void get_last_nodes(leaf_list_t &l);
+		const leaf_set_t &get_follow_node() const;
 
 		virtual bool is_nullable() const;
 
 		// @brief Add follow node for this node
-		// @param l Ths list of additional possible follow nodes
-		virtual void add_follow_nodes(const leaf_list_t &l);
+		// @param l Ths set of additional possible follow nodes
+		void add_follow_node(const leaf_set_t &l);
 
 		unsigned get_input() const;
 
 		virtual dfa_node *clone() const;
 	private:
-		leaf_list_t m_follow_nodes;
+		leaf_set_t m_follow_nodes;
 		unsigned m_input;
 	};
 
@@ -97,12 +94,6 @@ namespace lsg
 	public:
 		dfa_cat_node(dfa_node *former, dfa_node *latter);
 		virtual ~dfa_cat_node();
-
-		virtual void get_first_nodes(const_leaf_list_t &l) const;
-		virtual void get_first_nodes(leaf_list_t &l);
-
-		virtual void get_last_nodes(const_leaf_list_t &l) const;
-		virtual void get_last_nodes(leaf_list_t &l);
 
 		virtual bool is_nullable() const;
 		virtual dfa_node *clone() const;
@@ -119,12 +110,6 @@ namespace lsg
 		dfa_or_node(dfa_node *former, dfa_node *latter);
 		virtual ~dfa_or_node();
 
-		virtual void get_first_nodes(const_leaf_list_t &l) const;
-		virtual void get_first_nodes(leaf_list_t &l);
-
-		virtual void get_last_nodes(const_leaf_list_t &l) const;
-		virtual void get_last_nodes(leaf_list_t &l);
-
 		virtual bool is_nullable() const;
 		virtual dfa_node *clone() const;
 	private:
@@ -139,12 +124,6 @@ namespace lsg
 	public:
 		dfa_star_node(dfa_node *sub);
 		virtual ~dfa_star_node();
-
-		virtual void get_first_nodes(const_leaf_list_t &l) const;
-		virtual void get_first_nodes(leaf_list_t &l);
-
-		virtual void get_last_nodes(const_leaf_list_t &l) const;
-		virtual void get_last_nodes(leaf_list_t &l);
 
 		virtual dfa_node *clone() const;
 		virtual bool is_nullable() const
