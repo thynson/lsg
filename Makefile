@@ -18,7 +18,13 @@ OBJS=\
 	dfa_node.o\
 	dfa_machine.o\
 
-all: libdfa.a
+all: libdfa.a test-parser
+
+test-parser: parser.o libdfa.a
+	g++ $< libdfa.a -o $@
+
+parser.cc: parser.y
+	bison $< -o $@
 
 .PHONY: clean
 
