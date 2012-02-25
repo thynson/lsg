@@ -18,9 +18,11 @@ OBJS=\
 	dfa_node.o\
 	dfa_machine.o\
 
-all: libdfa.a test-parser
+all: lsg
 
-test-parser: parser.o libdfa.a
+libdfa.a: $(OBJS)
+
+lsg: parser.o libdfa.a
 	g++ $< libdfa.a -o $@
 
 parser.cc: parser.y
