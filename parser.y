@@ -57,6 +57,17 @@ export: EXPORT id regexp_wrap LF
 
 id: ID
   {
+      if (export_map.find(yytext) != export_map.end())
+      {
+          cerr << "Redefine id `" << yytext << "`" << endl;
+          exit (EXIT_FAILURE);
+      }
+      else if (define_map.find(yytext) != define_map.end())
+      {
+          cerr << "Redefine id `" << yytext << "`" << endl;
+          exit (EXIT_FAILURE);
+      }
+
       id_stack.push(string(yytext));
   }
 
