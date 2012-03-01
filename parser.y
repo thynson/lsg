@@ -2,23 +2,41 @@
 %{
 #include "dfa.hh"
 #include <stack>
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cctype>
+#include <string>
+#include <map>
 
+using namespace std;
 using namespace lsg;
 
-std::stack<dfa_node*> node_stack;
+stack<dfa_node*> node_stack;
 
-int yylex();
+/* Never forget a C++ source file will be generated, how ever yylex is
+ * implemented in C source file. */
+extern "C" int yylex(void);
 int yyerror(const char*);
 
 %}
 
 %token OR LP RP PLUS STAR QUES CHAR
+%token DEFINE EXPORT ID LQ RQ LF
 
 
 %%
+
+lsg: lsg define
+   | lsg export
+   | lsg LF /* Empty line */
+   | define
+   | export
+
+define: DEFINE ID regexp_wrap LF
+
+export: EXPORT ID regexp_wrap LF
+
+regexp_wrap: LQ regexp RQ
 
 regexp: regexp OR branch
 	  	{
@@ -73,44 +91,6 @@ single: CHAR
 	  | LP regexp RP
 
 %%
-
-
-int yylex()
-{
-	int ch = fgetc(stdin);
-
-	if (isalnum(ch))
-	{
-		yylval = ch;
-		return CHAR;
-	}
-	else if (ch == '+')
-	{
-		return PLUS;
-	}
-	else if (ch == '*')
-	{
-		return STAR;
-	}
-	else if (ch == '?')
-	{
-		return QUES;
-	}
-	else if (ch == '(')
-	{
-		return LP;
-	}
-	else if (ch == ')')
-	{
-		return RP;
-	}
-	else if (ch == '|')
-	{
-		return OR;
-	}
-	else
-		return EOF;
-}
 
 int yyerror(const char *)
 {

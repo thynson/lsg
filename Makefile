@@ -26,11 +26,18 @@ all: lsg
 
 libdfa.a: $(OBJS)
 
-lsg: parser.o libdfa.a
-	g++ $< libdfa.a -o $@
+lsg: parser.o lexer.o libdfa.a
+	g++ parser.o lexer.o libdfa.a -o $@
 
-parser.cc: parser.y
-	bison $< -o $@
+parser.cc parser.h: parser.y
+	bison --defines=parser.h $< -o parser.cc
+
+
+lexer.c lexer.h: lexer.l
+	flex --header-file=lexer.h -o lexer.c $<
+
+parser.o: parser.h lexer.h
+lexer.o: parser.h lexer.h
 
 
 all: lsg
@@ -38,7 +45,7 @@ all: lsg
 .PHONY: clean
 
 clean:
-	rm libdfa.a $(OBJS) -rf
+	rm libdfa.a $(OBJS) -rf parser.cc parser.hh lexer.c *.o *.obj
 
 libdfa.a: $(OBJS)
 	$(AR) rc $@ $(OBJS)
