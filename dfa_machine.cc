@@ -145,6 +145,17 @@ namespace lsg
 		}
 	}
 
+	void dfa_machine::dump(ostream &os) const
+	{
+		for (vector<dfa_state*>::const_iterator i = m_states.begin();
+			 i != m_states.end(); ++i)
+		{
+			os << "State " << (*i)->get_id() << ":" << endl;
+			(*i)->dump(os);
+			os << endl;
+		}
+	}
+
 	dfa_state::dfa_state(unsigned id)
 		: m_id(id)
 		, m_transit_table()
@@ -171,6 +182,16 @@ namespace lsg
 	unsigned dfa_state::get_id() const
 	{
 		return m_id;
+	}
+
+	void dfa_state::dump(ostream &os) const
+	{
+		map<unsigned, dfa_state*>::const_iterator i;
+		for (i = m_transit_table.begin(); i != m_transit_table.end(); ++i)
+		{
+			os << " On input " << i->first << " go to " << i->second->m_id
+			   << endl;
+		}
 	}
 
 }

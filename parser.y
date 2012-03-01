@@ -160,7 +160,12 @@ int yyerror(const char *)
 int main()
 {
 	yyparse();
-	dfa_node *root = node_stack.top();
-	dfa_machine m(root);
-	delete root;
+
+    for (map<string, dfa_node*>::iterator i = export_map.begin();
+         i != export_map.end(); ++i)
+    {
+        dfa_machine m(i->second);
+        cout << "Rule " << i->first << endl;
+        m.dump(cout);
+    }
 }
