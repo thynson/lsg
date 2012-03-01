@@ -42,32 +42,47 @@ lsg: lsg define
 define: DEFINE id regexp_wrap LF
       {
           dfa_node *node = node_stack.top();
-          node_stack.pop();
-          define_map.insert(make_pair(id_stack.top(), node));
+          string id = id_stack.top();
           id_stack.pop();
+
+          if (export_map.find(id) != export_map.end())
+          {
+              cerr << "Redefine id `" << id << "`" << endl;
+              exit (EXIT_FAILURE);
+          }
+          else if (define_map.find(yytext) != define_map.end())
+          {
+              cerr << "Redefine id `" << id << "`" << endl;
+              exit (EXIT_FAILURE);
+          }
+
+          node_stack.pop();
+          define_map.insert(make_pair(id, node));
       }
 
 export: EXPORT id regexp_wrap LF
       {
           dfa_node *node = node_stack.top();
-          node_stack.pop();
-          export_map.insert(make_pair(id_stack.top(), node));
+          string id = id_stack.top();
           id_stack.pop();
+
+          if (export_map.find(id) != export_map.end())
+          {
+              cerr << "Redefine id `" << id << "`" << endl;
+              exit (EXIT_FAILURE);
+          }
+          else if (define_map.find(yytext) != define_map.end())
+          {
+              cerr << "Redefine id `" << id << "`" << endl;
+              exit (EXIT_FAILURE);
+          }
+
+          node_stack.pop();
+          export_map.insert(make_pair(id, node));
       }
 
 id: ID
   {
-      if (export_map.find(yytext) != export_map.end())
-      {
-          cerr << "Redefine id `" << yytext << "`" << endl;
-          exit (EXIT_FAILURE);
-      }
-      else if (define_map.find(yytext) != define_map.end())
-      {
-          cerr << "Redefine id `" << yytext << "`" << endl;
-          exit (EXIT_FAILURE);
-      }
-
       id_stack.push(string(yytext));
   }
 
