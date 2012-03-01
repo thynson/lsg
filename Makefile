@@ -14,6 +14,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+CC ?= gcc
+CXX ?= g++
+AR ?= ar
+
 OBJS=\
 	dfa_node.o\
 	dfa_machine.o\
@@ -28,13 +32,19 @@ lsg: parser.o libdfa.a
 parser.cc: parser.y
 	bison $< -o $@
 
+
+all: lsg
+
 .PHONY: clean
 
 clean:
 	rm libdfa.a $(OBJS) -rf
 
 libdfa.a: $(OBJS)
-	ar rc $@ $(OBJS)
+	$(AR) rc $@ $(OBJS)
 
 .cc.o:
-	g++ -Wall -g -c -o $@ $<
+	$(CXX) -Wall -g -c -o $@ $<
+
+.c.o:
+	$(CC) -Wall -g -c -o $@ $<
