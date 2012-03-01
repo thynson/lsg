@@ -1,8 +1,15 @@
 
 %{
+
+extern "C" {
+
+#include "lexer.h"
+
+}
 #include "dfa.hh"
 #include <stack>
 #include <cstdlib>
+#include <iostream>
 #include <cstdio>
 #include <cctype>
 #include <string>
@@ -12,16 +19,16 @@ using namespace std;
 using namespace lsg;
 
 stack<dfa_node*> node_stack;
+stack<string> id_stack;
+map<string, dfa_node*> define_map;
+map<string, dfa_node*> export_map;
 
-/* Never forget a C++ source file will be generated, how ever yylex is
- * implemented in C source file. */
-extern "C" int yylex(void);
 int yyerror(const char*);
 
 %}
 
 %token OR LP RP PLUS STAR QUES CHAR
-%token DEFINE EXPORT ID LQ RQ LF
+%token DEFINE EXPORT ID LQ RQ LF REF_BEGIN REF_END
 
 
 %%
@@ -32,9 +39,26 @@ lsg: lsg define
    | define
    | export
 
-define: DEFINE ID regexp_wrap LF
+define: DEFINE id regexp_wrap LF
+      {
+          dfa_node *node = node_stack.top();
+          node_stack.pop();
+          define_map.insert(make_pair(id_stack.top(), node));
+          id_stack.pop();
+      }
 
-export: EXPORT ID regexp_wrap LF
+export: EXPORT id regexp_wrap LF
+      {
+          dfa_node *node = node_stack.top();
+          node_stack.pop();
+          export_map.insert(make_pair(id_stack.top(), node));
+          id_stack.pop();
+      }
+
+id: ID
+  {
+      id_stack.push(string(yytext));
+  }
 
 regexp_wrap: LQ regexp RQ
 
@@ -89,6 +113,31 @@ single: CHAR
 			node_stack.push(node);
 		}
 	  | LP regexp RP
+      | ref_express
+
+/* Change current_id to id_stack */
+ref_express: REF_BEGIN id REF_END
+           {
+               dfa_node *top;
+               string id = id_stack.top();
+               id_stack.pop();
+               if (export_map.find(id) != export_map.end()) {
+                   top = export_map[id]->clone();
+               }
+               else if (define_map.find(id) != define_map.end())
+               {
+                   top = define_map[id]->clone();
+               }
+               else
+               {
+                   cerr << "id is not found" << endl;
+                   exit(EXIT_FAILURE);
+               }
+
+               node_stack.push(top);
+           }
+
+
 
 %%
 

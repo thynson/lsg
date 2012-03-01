@@ -5,6 +5,7 @@
 
 %x define
 %x regexp
+%x refer
 %%
 
 <INITIAL,define>define {
@@ -15,7 +16,7 @@
 	return EXPORT;
 }
 
-<INITIAL,define>[a-zA-Z_][a-zA-Z_0-9]* {
+<INITIAL,define,refer>[a-zA-Z_][a-zA-Z_0-9]* {
 	return ID;
 }
 
@@ -66,6 +67,15 @@
 	return RP;
 }
 
+<regexp>\$\( {
+	BEGIN(refer);
+	return REF_BEGIN;
+}
+
+<refer>\) {
+	BEGIN(regexp);
+	return REF_END;
+}
 
 
 %%
