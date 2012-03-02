@@ -33,13 +33,13 @@ int yyerror(const char*);
 
 %%
 
-lsg: lsg define
-   | lsg export
+lsg: lsg define LF
+   | lsg export LF
    | lsg LF /* Empty line */
    | define
    | export
 
-define: DEFINE id regexp_wrap LF
+define: DEFINE id regexp_wrap
       {
           dfa_node *node = node_stack.top();
           string id = id_stack.top();
@@ -60,7 +60,7 @@ define: DEFINE id regexp_wrap LF
           define_map.insert(make_pair(id, node));
       }
 
-export: EXPORT id regexp_wrap LF
+export: EXPORT id regexp_wrap
       {
           dfa_node *node = node_stack.top();
           string id = id_stack.top();
@@ -135,7 +135,7 @@ node: single PLUS
 
 single: CHAR
 	  	{
-			dfa_leaf_node *node = new dfa_leaf_node($1);
+			dfa_leaf_node *node = new dfa_leaf_node(yytext[0]);
 			node_stack.push(node);
 		}
 	  | LP regexp RP
@@ -162,8 +162,6 @@ ref_express: REF_BEGIN id REF_END
 
                node_stack.push(top);
            }
-
-
 
 %%
 
