@@ -33,6 +33,9 @@
 	BEGIN(define);
 }
 
+<INITIAL,define>\#[^\n]* {
+	return COMMENT;
+}
 
 <regexp>\" {
 	BEGIN(define);

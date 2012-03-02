@@ -29,6 +29,7 @@ int yyerror(const char*);
 
 %token OR LP RP PLUS STAR QUES CHAR
 %token DEFINE EXPORT ID LQ RQ LF REF_BEGIN REF_END
+%token COMMENT
 
 
 %%
@@ -37,6 +38,7 @@ lsg: lsg define LF
    | lsg export LF
    | lsg LF /* Empty line */
    | define
+   | COMMENT LF
    | export
 
 define: DEFINE id regexp_wrap
