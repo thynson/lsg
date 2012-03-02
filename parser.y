@@ -10,6 +10,7 @@ extern "C" {
 #include <stack>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <cstdio>
 #include <cctype>
 #include <string>
@@ -30,7 +31,7 @@ int yyerror(const char*);
 %token OR LP RP PLUS STAR QUES CHAR
 %token DEFINE EXPORT ID LQ RQ LF REF_BEGIN REF_END
 %token COMMENT
-
+%token ESCAPE ESCAPE_HEX ESCAPE_OCT ESCAPE_ALL
 
 %%
 
@@ -140,6 +141,68 @@ single: CHAR
 			dfa_leaf_node *node = new dfa_leaf_node(yytext[0]);
 			node_stack.push(node);
 		}
+      | ESCAPE
+        {
+            int input = -1;
+            switch(yytext[1])
+            {
+            case 'a':
+                input = '\a';
+                break;
+            case 'b':
+                input = '\b';
+                break;
+            case 'f':
+                input = '\f';
+                break;
+            case 'n':
+                input = '\n';
+                break;
+            case 'r':
+                input = '\r';
+                break;
+            case 't':
+                input = '\t';
+                break;
+            case 'v':
+                input = '\v';
+                break;
+            }
+
+            if (input > 0)
+            {
+                dfa_leaf_node *node = new dfa_leaf_node(input);
+                node_stack.push(node);
+            }
+            else
+            {
+                /* TODO: What to handle with this situation? */
+            }
+        }
+      | ESCAPE_HEX
+        {
+            stringstream s;
+            s << hex << '0' << (yytext+1);
+            int input;
+            s >> input;
+            dfa_leaf_node *node = new dfa_leaf_node(input);
+            node_stack.push(node);
+        }
+      | ESCAPE_OCT
+        {
+            stringstream s;
+            s << oct << (yytext+1);
+            int input;
+            s >> input;
+            dfa_leaf_node *node = new dfa_leaf_node(input);
+            node_stack.push(node);
+        }
+      | ESCAPE_ALL
+        {
+            int input = yytext[1];
+            dfa_leaf_node *node = new dfa_leaf_node(input);
+            node_stack.push(node);
+        }
 	  | LP regexp RP
       | ref_express
 

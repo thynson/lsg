@@ -75,6 +75,22 @@
 	return REF_BEGIN;
 }
 
+<regexp>\\[abfnrtv] {
+	return ESCAPE;
+}
+
+<regexp>\\[xX][0-9a-fA-F]{2} {
+	return ESCAPE_HEX;
+}
+
+<regexp>\\0[0-3][0-7]{2} {
+	return ESCAPE_OCT;
+}
+
+<regexp>\\. {
+	return ESCAPE_ALL;
+}
+
 <refer>\) {
 	BEGIN(regexp);
 	return REF_END;
