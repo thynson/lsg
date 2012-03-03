@@ -235,38 +235,38 @@ int yyerror(const char *)
 	exit(EXIT_FAILURE);
 }
 
-int main()
+
+
+namespace lsg
 {
-	yyparse();
-
-	dfa_node *root = NULL;
-	unsigned rule_id = 257; // Rule Id start from 257
-	map<unsigned, string> rule_map;
-
-	for (map<string, dfa_node*>::iterator i = export_map.begin();
-		 i != export_map.end(); ++i)
+	dfa_node *start_parse()
 	{
+		yyparse();
+		dfa_node *root = NULL;
+		// Rule ID Start from 257, 0-256 is reserved for input
+		unsigned int rule_id = 257;
 
-		// Dummy node is used to identify accept state
+		map<unsigned, string> rule_map;
 
-		dfa_leaf_node *dummy = new dfa_leaf_node(rule_id);
-		dfa_cat_node *handle = new dfa_cat_node(i->second, dummy);
-		rule_map.insert(make_pair(rule_id++, i->first));
-
-		if (root == NULL)
+		for (map<string, dfa_node*>::iterator i = export_map.begin();
+			 i != export_map.end(); ++i)
 		{
-			root = handle;
+
+			// Dummy node is used to identify accept state
+
+			dfa_leaf_node *dummy = new dfa_leaf_node(rule_id);
+			dfa_cat_node *handle = new dfa_cat_node(i->second, dummy);
+			rule_map.insert(make_pair(rule_id++, i->first));
+
+			if (root == NULL)
+			{
+				root = handle;
+			}
+			else
+			{
+				root = new dfa_or_node(root, handle);
+			}
 		}
-		else
-		{
-			root = new dfa_or_node(root, handle);
-		}
+		return root;
 	}
-
-	dfa_machine m(root);
-
-	m.dump(cout);
-
-	delete root;
-
 }

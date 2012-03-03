@@ -18,37 +18,39 @@ CC ?= gcc
 CXX ?= g++
 AR ?= ar
 
-OBJS=\
+LIB_OBJS=\
 	dfa_node.o\
 	dfa_machine.o\
 
-all: lsg
-
-libdfa.a: $(OBJS)
-
-lsg: parser.o lexer.o libdfa.a
-	g++ parser.o lexer.o libdfa.a -o $@
-
-parser.cc parser.h: parser.y
-	bison --defines=parser.h $< -o parser.cc
-
-
-lexer.c lexer.h: lexer.l
-	flex --header-file=lexer.h -o lexer.c $<
-
-parser.o: parser.h lexer.h
-lexer.o: parser.h lexer.h
-
+EXE_OBJS=\
+	main.o\
+	parser.o\
+	lexer.o\
 
 all: lsg
 
 .PHONY: clean
 
+parser.o: parser.h lexer.h
+lexer.o: parser.h lexer.h
+main.o: parser.h
+
+
 clean:
 	rm libdfa.a $(OBJS) -rf parser.cc parser.hh lexer.c *.o *.obj
 
-libdfa.a: $(OBJS)
-	$(AR) rc $@ $(OBJS)
+lsg: $(EXE_OBJS) libdfa.a
+	g++ $(EXE_OBJS) libdfa.a -o $@
+
+libdfa.a: $(LIB_OBJS)
+	$(AR) rc $@ $(LIB_OBJS)
+
+parser.cc parser.h: parser.y
+	bison --defines=parser.h -o parser.cc $<
+
+
+lexer.c lexer.h: lexer.l
+	flex --header-file=lexer.h -o lexer.c $<
 
 .cc.o:
 	$(CXX) -Wall -g -c -o $@ $<
