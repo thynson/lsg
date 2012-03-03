@@ -27,7 +27,7 @@ int yyerror(const char*);
 
 %token OR LP RP PLUS STAR QUES CHAR
 %token DEFINE EXPORT ID LQ RQ LF REF_BEGIN REF_END
-%token COMMENT
+%token COMMENT LSG_EOF
 %token ESCAPE ESCAPE_HEX ESCAPE_OCT ESCAPE_ALL
 
 %%
@@ -38,6 +38,14 @@ lsg: lsg define LF
 	| define
 	| COMMENT LF
 	| export
+	| lsg LSG_EOF
+{
+	map<string, dfa_node*>::iterator i;
+	for (i = define_map.begin(); i != define_map.end(); ++i)
+	{
+		delete i->second;
+	}
+}
 
 define: DEFINE id regexp_wrap
 {

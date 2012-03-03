@@ -11,6 +11,10 @@
 %x refer
 %%
 
+<<EOF>> {
+	return LSG_EOF;
+}
+
 <INITIAL,define>define {
 	return DEFINE;
 }
