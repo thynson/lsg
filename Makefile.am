@@ -23,9 +23,12 @@ lib_LTLIBRARIES=liblsg.la
 lsg_SOURCES=main.cc
 
 # Not using automake default rules for flex and bison source So here we
-# should handle clean up.
+# should handle clean up and dist-hook.
 clean-local:
 	$(RM) parser.cc parser.h lexer.cc lexer.h
+
+dist-hook:
+	cp parser.yy lexer.ll $(distdir)
 
 # Although parser.cc directly depend on parser.h, lexer.h and parser.yy,
 # and lexer.cc directly depend on parser.h lexer.h and lexer.ll, writing
