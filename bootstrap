@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pushd `dirname "$0"`
+libtoolize && aclocal && autoheader && automake --foreign --add-missing && autoconf
+popd

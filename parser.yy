@@ -1,12 +1,9 @@
 
 %{
 
-extern "C" {
 
-#include "lexer.h"
-
-}
 #include "dfa.hh"
+#include "lexer.h"
 #include <stack>
 #include <cstdlib>
 #include <iostream>

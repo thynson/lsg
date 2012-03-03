@@ -14,46 +14,23 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-CC ?= gcc
-CXX ?= g++
-AR ?= ar
+ACLOCAL_AMFLAGS=-I build-aux/m4
 
-LIB_OBJS=\
-	dfa_node.o\
-	dfa_machine.o\
+bin_PROGRAMS=lsg
 
-EXE_OBJS=\
-	main.o\
-	parser.o\
-	lexer.o\
+lib_LTLIBRARIES=liblsg.la
 
-all: lsg
+lsg_SOURCES=main.cc
 
-.PHONY: clean
+parser.cc parser.h: parser.yy
+	$(YACC) --defines=parser.h -o parser.cc $<
 
-parser.o: parser.h lexer.h
-lexer.o: parser.h lexer.h
-main.o: parser.h
+lexer.cc lexer.h: lexer.ll
+	$(LEX) --header-file=lexer.h -o lexer.cc $<
 
 
-clean:
-	rm libdfa.a $(OBJS) -rf parser.cc parser.hh lexer.c *.o *.obj
+lsg_LDADD=liblsg.la lexer.o parser.o
 
-lsg: $(EXE_OBJS) libdfa.a
-	g++ $(EXE_OBJS) libdfa.a -o $@
+liblsg_la_SOURCES=dfa_node.cc\
+					  dfa_machine.cc
 
-libdfa.a: $(LIB_OBJS)
-	$(AR) rc $@ $(LIB_OBJS)
-
-parser.cc parser.h: parser.y
-	bison --defines=parser.h -o parser.cc $<
-
-
-lexer.c lexer.h: lexer.l
-	flex --header-file=lexer.h -o lexer.c $<
-
-.cc.o:
-	$(CXX) -Wall -g -c -o $@ $<
-
-.c.o:
-	$(CC) -Wall -g -c -o $@ $<
