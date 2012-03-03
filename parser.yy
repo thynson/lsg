@@ -24,21 +24,25 @@ map<string, dfa_node*> export_map;
 int yyerror(const char*);
 
 %}
-
-%token OR LP RP PLUS STAR QUES CHAR
-%token DEFINE EXPORT ID LQ RQ LF REF_BEGIN REF_END
-%token COMMENT LSG_EOF
-%token ESCAPE ESCAPE_HEX ESCAPE_OCT ESCAPE_ALL
+%token LSG_TK_CHAR LSG_TK_LP LSG_TK_RP
+%token LSG_TK_OR LSG_TK_PLUS LSG_TK_STAR LSG_TK_QUES
+%token LSG_TK_LQ LSG_TK_RQ
+%token LSG_TK_DEFINE LSG_TK_EXPORT
+%token LSG_TK_ID
+%token LSG_TK_LF
+%token LSG_TK_REF
+%token LSG_TK_EOF
+%token LSG_TK_ESCAPE LSG_TK_ESCAPE_HEX LSG_TK_ESCAPE_OCT LSG_TK_ESCAPE_ALL
 
 %%
 
-lsg: lsg define LF
-	| lsg export LF
-	| lsg LF /* Empty line */
+lsg: lsg define
+	| lsg export
+	| lsg LSG_TK_LF /* Empty line */
+	| LSG_TK_LF
 	| define
-	| COMMENT LF
 	| export
-	| lsg LSG_EOF
+	| lsg LSG_TK_EOF
 {
 	map<string, dfa_node*>::iterator i;
 	for (i = define_map.begin(); i != define_map.end(); ++i)
@@ -47,7 +51,7 @@ lsg: lsg define LF
 	}
 }
 
-define: DEFINE id regexp_wrap
+define: LSG_TK_DEFINE id regexp_wrap LSG_TK_LF
 {
 	dfa_node *node = node_stack.top();
 	string id = id_stack.top();
@@ -68,7 +72,7 @@ define: DEFINE id regexp_wrap
 	define_map.insert(make_pair(id, node));
 }
 
-export: EXPORT id regexp_wrap
+export: LSG_TK_EXPORT id regexp_wrap LSG_TK_LF
 {
 	dfa_node *node = node_stack.top();
 	string id = id_stack.top();
@@ -89,14 +93,14 @@ export: EXPORT id regexp_wrap
 	export_map.insert(make_pair(id, node));
 }
 
-id: ID
+id: LSG_TK_ID
 {
 	id_stack.push(string(yytext));
 }
 
-regexp_wrap: LQ regexp RQ
+regexp_wrap: LSG_TK_LQ regexp LSG_TK_RQ
 
-regexp: regexp OR branch
+regexp: regexp LSG_TK_OR branch
 {
 	dfa_node *rhs = node_stack.top();
 	node_stack.pop();
@@ -116,7 +120,7 @@ branch: branch node
 }
 	| node
 
-node: single PLUS
+node: single LSG_TK_PLUS
 {
 	dfa_node *lhs = node_stack.top();
 	dfa_node *rhs = lhs->clone();
@@ -125,14 +129,14 @@ node: single PLUS
 	dfa_node *branch = new dfa_cat_node(lhs, rhs);
 	node_stack.push(branch);
 }
-	| single STAR
+	| single LSG_TK_STAR
 {
 	dfa_node *sub = node_stack.top();
 	node_stack.pop();
 	dfa_node *branch = new dfa_star_node(sub);
 	node_stack.push(branch);
 }
-	| single QUES
+	| single LSG_TK_QUES
 {
 	dfa_node *lhs = node_stack.top();
 	node_stack.pop();
@@ -141,12 +145,12 @@ node: single PLUS
 }
 	| single
 
-single: CHAR
+single: LSG_TK_CHAR
 {
 	dfa_leaf_node *node = new dfa_leaf_node(yytext[0]);
 	node_stack.push(node);
 }
-	| ESCAPE
+	| LSG_TK_ESCAPE
 {
 	int input = -1;
 	switch(yytext[1])
@@ -184,7 +188,7 @@ single: CHAR
 		/* TODO: What to handle with this situation? */
 	}
 }
-	| ESCAPE_HEX
+	| LSG_TK_ESCAPE_HEX
 {
 	stringstream s;
 	s << hex << '0' << (yytext+1);
@@ -193,7 +197,7 @@ single: CHAR
 	dfa_leaf_node *node = new dfa_leaf_node(input);
 	node_stack.push(node);
 }
-	| ESCAPE_OCT
+	| LSG_TK_ESCAPE_OCT
 {
 	stringstream s;
 	s << oct << (yytext+1);
@@ -202,17 +206,17 @@ single: CHAR
 	dfa_leaf_node *node = new dfa_leaf_node(input);
 	node_stack.push(node);
 }
-	| ESCAPE_ALL
+	| LSG_TK_ESCAPE_ALL
 {
 	int input = yytext[1];
 	dfa_leaf_node *node = new dfa_leaf_node(input);
 	node_stack.push(node);
 }
-	| LP regexp RP
+	| LSG_TK_LP regexp LSG_TK_RP
 	| ref_express
 
 /* Change current_id to id_stack */
-ref_express: REF_BEGIN id REF_END
+ref_express: LSG_TK_REF id LSG_TK_RP
 {
 	dfa_node *top;
 	string id = id_stack.top();
@@ -248,7 +252,7 @@ namespace lsg
 	{
 		yyparse();
 		dfa_node *root = NULL;
-		// Rule ID Start from 257, 0-256 is reserved for input
+		// Rule Id Start from 257, 0-256 is reserved for input
 		unsigned int rule_id = 257;
 
 		map<unsigned, string> rule_map;

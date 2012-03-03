@@ -6,103 +6,98 @@
 %option nounput
 %option noinput
 
-%x define
-%x regexp
-%x refer
+%x LSG_COND_DEF
+%x LSG_COND_RGX
+%x LSG_COND_REF
 %%
 
 <<EOF>> {
-	return LSG_EOF;
+	return LSG_TK_EOF;
 }
 
-<INITIAL,define>define {
-	return DEFINE;
+<INITIAL,LSG_COND_DEF>define {
+	return LSG_TK_DEFINE;
 }
 
-<INITIAL,define>export {
-	return EXPORT;
+<INITIAL,LSG_COND_DEF>export {
+	return LSG_TK_EXPORT;
 }
 
-<INITIAL,define,refer>[a-zA-Z_][a-zA-Z_0-9]* {
-	return ID;
+<INITIAL,LSG_COND_DEF,LSG_COND_REF>[a-zA-Z_][a-zA-Z_0-9]* {
+	return LSG_TK_ID;
 }
 
-<INITIAL,define>\" {
-	BEGIN(regexp);
-	return LQ;
+<INITIAL,LSG_COND_DEF>\" {
+	BEGIN(LSG_COND_RGX);
+	return LSG_TK_LQ;
 }
 
-<INITIAL,define>\n {
-	return LF;
+<INITIAL,LSG_COND_DEF>\n {
+	return LSG_TK_LF;
 }
 
-<INITIAL,define>[\t ]+ {
-	BEGIN(define);
+<INITIAL,LSG_COND_DEF>[\t ]+ {
+	BEGIN(LSG_COND_DEF);
 }
 
-<INITIAL,define>\#[^\n]* {
-	return COMMENT;
+<INITIAL,LSG_COND_DEF>\#[^\n]* {
+	BEGIN(LSG_COND_DEF);
 }
 
-<regexp>\" {
-	BEGIN(define);
-	return RQ;
+<LSG_COND_RGX>\" {
+	BEGIN(LSG_COND_DEF);
+	return LSG_TK_RQ;
 }
 
-<regexp>[a-zA-Z0-9_] {
-	return CHAR;
+<LSG_COND_RGX>[a-zA-Z0-9_] {
+	return LSG_TK_CHAR;
 }
 
-<regexp>\+ {
-	return PLUS;
+<LSG_COND_RGX>\+ {
+	return LSG_TK_PLUS;
 }
 
-<regexp>\* {
-	return STAR;
+<LSG_COND_RGX>\* {
+	return LSG_TK_STAR;
 }
 
-<regexp>\? {
-	return QUES;
+<LSG_COND_RGX>\? {
+	return LSG_TK_QUES;
 }
 
-<regexp>\| {
-	return OR;
+<LSG_COND_RGX>\| {
+	return LSG_TK_OR;
 }
 
-<regexp>\( {
-	return LP;
+<LSG_COND_RGX>\( {
+	return LSG_TK_LP;
 }
 
-<regexp>\) {
-	return RP;
+<LSG_COND_RGX,LSG_COND_REF>\) {
+	BEGIN(LSG_COND_RGX);
+	return LSG_TK_RP;
 }
 
-<regexp>\$\( {
-	BEGIN(refer);
-	return REF_BEGIN;
+<LSG_COND_RGX>\$\( {
+	BEGIN(LSG_COND_REF);
+	return LSG_TK_REF;
 }
 
-<regexp>\\[abfnrtv] {
-	return ESCAPE;
+<LSG_COND_RGX>\\[abfnrtv] {
+	return LSG_TK_ESCAPE;
 }
 
-<regexp>\\[xX][0-9a-fA-F]{2} {
-	return ESCAPE_HEX;
+<LSG_COND_RGX>\\[xX][0-9a-fA-F]{2} {
+	return LSG_TK_ESCAPE_HEX;
 }
 
-<regexp>\\0[0-3][0-7]{2} {
-	return ESCAPE_OCT;
+<LSG_COND_RGX>\\0[0-3][0-7]{2} {
+	return LSG_TK_ESCAPE_OCT;
 }
 
-<regexp>\\. {
-	return ESCAPE_ALL;
+<LSG_COND_RGX>\\. {
+	return LSG_TK_ESCAPE_ALL;
 }
-
-<refer>\) {
-	BEGIN(regexp);
-	return REF_END;
-}
-
 
 %%
 
