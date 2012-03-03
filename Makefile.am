@@ -22,13 +22,32 @@ lib_LTLIBRARIES=liblsg.la
 
 lsg_SOURCES=main.cc
 
-parser.cc parser.h: parser.yy
+# Not using automake default rules for flex and bison source So here we
+# should handle clean up and dist-hook.
+clean-local:
+	$(RM) parser.cc parser.h lexer.cc lexer.h
+
+dist-hook:
+	cp parser.yy lexer.ll $(distdir)
+
+# Although parser.cc directly depend on parser.h, lexer.h and parser.yy,
+# and lexer.cc directly depend on parser.h lexer.h and lexer.ll, writing
+#
+# 	parser.cc: parser.h lexer.h
+# 	...
+# 	lexer.cc: parser.h lexer.h
+#	...
+#
+# will cause cyclic dependency. But we could see that for parser.cc and
+# lexer.cc, the essential depending target is parser.yy and lexer.ll.
+parser.cc parser.h: parser.yy lexer.ll
 	$(YACC) --defines=parser.h -o parser.cc $<
 
-lexer.cc lexer.h: lexer.ll
+lexer.cc lexer.h: lexer.ll parser.yy
 	$(LEX) --header-file=lexer.h -o lexer.cc $<
 
-
+# Add because lexer.cc and parser.cc is not in lsg_SOURCES, put here to
+# tell the linker not to leave them alone.
 lsg_LDADD=liblsg.la lexer.o parser.o
 
 liblsg_la_SOURCES=dfa_node.cc\
