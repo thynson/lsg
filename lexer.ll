@@ -10,11 +10,6 @@
 %x LSG_COND_RGX
 %x LSG_COND_REF
 %%
-
-<<EOF>> {
-	return LSG_TK_EOF;
-}
-
 <INITIAL,LSG_COND_DEF>define {
 	return LSG_TK_DEFINE;
 }

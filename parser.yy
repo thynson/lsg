@@ -31,18 +31,11 @@ int yyerror(const char*);
 %token LSG_TK_ID
 %token LSG_TK_LF
 %token LSG_TK_REF
-%token LSG_TK_EOF
 %token LSG_TK_ESCAPE LSG_TK_ESCAPE_HEX LSG_TK_ESCAPE_OCT LSG_TK_ESCAPE_ALL
 
 %%
 
-lsg: lsg define
-	| lsg export
-	| lsg LSG_TK_LF /* Empty line */
-	| LSG_TK_LF
-	| define
-	| export
-	| lsg LSG_TK_EOF
+lsg: lines
 {
 	map<string, dfa_node*>::iterator i;
 	for (i = define_map.begin(); i != define_map.end(); ++i)
@@ -50,6 +43,13 @@ lsg: lsg define
 		delete i->second;
 	}
 }
+
+lines: lines define
+	| lines export
+	| lines LSG_TK_LF /* Empty lines */
+	| LSG_TK_LF
+	| define
+	| export
 
 define: LSG_TK_DEFINE id regexp_wrap LSG_TK_LF
 {
