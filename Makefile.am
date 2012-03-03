@@ -20,7 +20,8 @@ bin_PROGRAMS=lsg
 
 lib_LTLIBRARIES=liblsg.la
 
-lsg_SOURCES=main.cc
+lsg_SOURCES=main.cc\
+			lsg.hh
 
 # Not using automake default rules for flex and bison source So here we
 # should handle clean up and dist-hook.
@@ -53,5 +54,7 @@ lexer.o: lexer.cc lexer.h parser.h
 lsg_LDADD=liblsg.la lexer.o parser.o
 
 liblsg_la_SOURCES=dfa_node.cc\
-					  dfa_machine.cc
+				  dfa_machine.cc\
+				  dfa.hh
+
 
