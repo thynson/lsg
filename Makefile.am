@@ -45,6 +45,8 @@ parser.cc parser.h: parser.yy lexer.ll
 
 lexer.cc lexer.h: lexer.ll parser.yy
 	$(LEX) --header-file=lexer.h -o lexer.cc $<
+parser.o: parser.cc lexer.h parser.h
+lexer.o: lexer.cc lexer.h parser.h
 
 # Add because lexer.cc and parser.cc is not in lsg_SOURCES, put here to
 # tell the linker not to leave them alone.
