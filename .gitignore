@@ -7,3 +7,9 @@
 *.lib
 *~
 *.orig
+lexer.c
+lexer.h
+parser.cc
+parser.h
+lsg
+tags
