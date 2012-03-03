@@ -3,6 +3,9 @@
 #include "parser.h"
 %}
 
+%option nounput
+%option noinput
+
 %x define
 %x regexp
 %x refer
