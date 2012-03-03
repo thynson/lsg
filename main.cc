@@ -15,7 +15,6 @@
 //
 
 #include "lsg.hh"
-#include "lexer.h"
 #include <limits.h>
 #include <unistd.h>
 #include <libgen.h>
@@ -109,7 +108,7 @@ int main(int argc, char **argv)
 	if (input_filename != "")
 		fin = fopen(input_filename.c_str(), "r");
 
-	yyset_in(fin);
+	lexer_set_stream(fin);
 	dfa_node *root = start_parse();
 
 	dfa_machine m(root);

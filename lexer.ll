@@ -101,3 +101,11 @@ int yywrap(void)
 {
 	return -1;
 }
+
+namespace lsg
+{
+	void lexer_set_stream(FILE *stream)
+	{
+		yyset_in(stream);
+	}
+}
