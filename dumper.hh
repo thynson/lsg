@@ -35,6 +35,17 @@ namespace lsg
 		virtual void dump_postscript(std::ostream &os) = 0;
 		dfa_machine *m_machine;
 	};
+
+	class pretty_dumper : public dumper
+	{
+	public:
+		pretty_dumper(dfa_machine *m);
+		virtual ~pretty_dumper();
+	private:
+		virtual void dump_state(std::ostream &os, dfa_state *s);
+		virtual void dump_prolog(std::ostream &os, unsigned state_count);
+		virtual void dump_postscript(std::ostream &os);
+	};
 }
 
 #endif
