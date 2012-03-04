@@ -29,10 +29,10 @@ clean-local:
 	$(RM) parser.cc parser.h lexer.cc lexer.h
 
 dist-hook:
-	cp parser.yy lexer.ll $(distdir)
+	cp parser.y lexer.l $(distdir)
 
-# Although parser.cc directly depend on parser.h, lexer.h and parser.yy,
-# and lexer.cc directly depend on parser.h lexer.h and lexer.ll, writing
+# Although parser.cc directly depend on parser.h, lexer.h and parser.y,
+# and lexer.cc directly depend on parser.h lexer.h and lexer.l, writing
 #
 # 	parser.cc: parser.h lexer.h
 # 	...
@@ -40,11 +40,11 @@ dist-hook:
 #	...
 #
 # will cause cyclic dependency. But we could see that for parser.cc and
-# lexer.cc, the essential depending target is parser.yy and lexer.ll.
-parser.cc parser.h: parser.yy lexer.ll
+# lexer.cc, the essential depending target is parser.y and lexer.l.
+parser.cc parser.h: parser.y lexer.l
 	$(YACC) --defines=parser.h -o parser.cc $<
 
-lexer.cc lexer.h: lexer.ll parser.yy
+lexer.cc lexer.h: lexer.l parser.y
 	$(LEX) --header-file=lexer.h -o lexer.cc $<
 parser.o: parser.cc lexer.h parser.h
 lexer.o: lexer.cc lexer.h parser.h
