@@ -1,7 +1,7 @@
 
 %{
 
-
+#include "lsg.hh"
 #include "dfa.hh"
 #include "lexer.h"
 #include <stack>
@@ -140,7 +140,7 @@ node: single LSG_TK_PLUS
 {
 	dfa_node *lhs = node_stack.top();
 	node_stack.pop();
-	dfa_or_node *branch = new dfa_or_node(lhs, new dfa_leaf_node(0));
+	dfa_or_node *branch = new dfa_or_node(lhs, new dfa_leaf_node(LSG_NONE));
 	node_stack.push(branch);
 }
 	| single
@@ -252,8 +252,7 @@ namespace lsg
 	{
 		yyparse();
 		dfa_node *root = NULL;
-		// Rule Id Start from 257, 0-256 is reserved for input
-		unsigned int rule_id = 257;
+		unsigned int rule_id = LSG_RULE_ID_START;
 
 		map<unsigned, string> rule_map;
 

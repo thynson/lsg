@@ -24,6 +24,11 @@
 /* Do not put parser.h and lexer.h here, they are generated */
 
 namespace lsg {
+
+	enum {
+		LSG_NONE = 256,
+		LSG_RULE_ID_START = 257
+	};
 	void lexer_set_stream(FILE *stream);
 	dfa_node *start_parse();
 }

@@ -15,6 +15,7 @@
 //
 
 #include "dfa.hh"
+#include "lsg.hh"
 
 namespace lsg
 {
@@ -87,7 +88,7 @@ namespace lsg
 
 	bool dfa_leaf_node::is_nullable() const
 	{
-		return m_input == 0;
+		return m_input == LSG_NONE;
 	}
 
 	unsigned dfa_leaf_node::get_input() const

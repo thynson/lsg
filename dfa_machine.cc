@@ -14,9 +14,10 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 //
 
+#include "dfa.hh"
+#include "lsg.hh"
 #include <memory>
 #include <algorithm>
-#include "dfa.hh"
 
 namespace lsg
 {
@@ -189,8 +190,16 @@ namespace lsg
 		map<unsigned, dfa_state*>::const_iterator i;
 		for (i = m_transit_table.begin(); i != m_transit_table.end(); ++i)
 		{
-			os << " On input " << i->first << " go to " << i->second->m_id
-			   << endl;
+			if (i->first < LSG_RULE_ID_START)
+			{
+				os << " On input " << i->first << " go to " << i->second->m_id
+				   << endl;
+			}
+			else
+			{
+				os << " Satisfy with Rule " << (i->first - LSG_RULE_ID_START)
+				   << endl;
+			}
 		}
 	}
 
