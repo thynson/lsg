@@ -146,6 +146,11 @@ namespace lsg
 		}
 	}
 
+	const std::vector<dfa_state*> &dfa_machine::get_states() const
+	{
+		return m_states;
+	}
+
 	void dfa_machine::dump(ostream &os) const
 	{
 		for (vector<dfa_state*>::const_iterator i = m_states.begin();

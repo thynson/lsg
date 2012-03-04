@@ -21,6 +21,8 @@ bin_PROGRAMS=lsg
 lib_LTLIBRARIES=liblsg.la
 
 lsg_SOURCES=main.cc\
+			dumper.cc\
+			dumper.hh\
 			lsg.hh
 
 # Not using automake default rules for flex and bison source So here we

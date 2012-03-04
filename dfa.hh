@@ -157,6 +157,7 @@ namespace lsg
 	public:
 		dfa_machine(const dfa_node *root);
 		void dump(std::ostream &os) const;
+		const std::vector<dfa_state*> &get_states() const;
 		~dfa_machine();
 	private:
 		std::vector<dfa_state*> m_states;
