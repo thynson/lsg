@@ -15,6 +15,7 @@
 //
 
 #include "lsg.hh"
+#include "dumper.hh"
 #include <limits.h>
 #include <unistd.h>
 #include <libgen.h>
@@ -112,13 +113,14 @@ int main(int argc, char **argv)
 	dfa_node *root = start_parse();
 
 	dfa_machine m(root);
+	pretty_dumper d(&m);
 
 	if (output_filename == "")
-		m.dump(cout);
+		d.dump(cout);
 	else
 	{
 		fstream fout(output_filename.c_str(), fstream::out);
-		m.dump(fout);
+		d.dump(fout);
 	}
 
 	delete root;
