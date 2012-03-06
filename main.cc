@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 	dfa_node *root = start_parse();
 
 	dfa_machine m(root);
-	pretty_dumper d(&m);
+	c_dumper d(&m);
 
 	if (output_filename == "")
 		d.dump(cout);
