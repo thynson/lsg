@@ -35,15 +35,18 @@ namespace
 		CO_START = 256, // Not in use, just make value of follow flags larger
 		CO_INPUT,
 		CO_OUTPUT,
+		CO_LANG,
 		CO_HELP
 	};
 
 	string output_filename("");
 	string input_filename("");
+	string output_language("pretty");
 
 	const struct option long_opts[] = {
 		{"input", 1, NULL, CO_INPUT},
 		{"output", 1, NULL, CO_OUTPUT},
+		{"lang", 1, NULL, CO_LANG},
 		{"help", 0, NULL, CO_HELP},
 		{NULL, 0, NULL, 0}
 	};
@@ -58,6 +61,8 @@ namespace
 		cout << basename(name) << " usage:" << endl
 			 << " -i FILE --input=FILE    Read from FILE other than stdin\n"
 			 << " -o FILE --output=FILE   Output to FILE other than stdout\n"
+			 << " -l LANG --output=LANG   Dump in LANG language\n"
+			 << "                         LANG can be (pretty, c)\n"
 			 << " -h --help               Print help\n"
 			 << endl;
 
@@ -68,7 +73,7 @@ namespace
 		for ( ; ; )
 		{
 			int optidx;
-			int ret = getopt_long(argc, argv, "i:o:h", long_opts, &optidx);
+			int ret = getopt_long(argc, argv, "i:o:l:h", long_opts, &optidx);
 
 			switch(ret)
 			{
@@ -80,6 +85,11 @@ namespace
 			case 'o':
 			case CO_OUTPUT:
 				output_filename = optarg;
+				break;
+
+			case 'l':
+			case CO_LANG:
+				output_language = optarg;
 				break;
 
 			case 'h':
@@ -113,16 +123,29 @@ int main(int argc, char **argv)
 	dfa_node *root = start_parse();
 
 	dfa_machine m(root);
-	c_dumper d(&m);
+
+	dumper *d;
+
+	if (output_language == "pretty")
+		d = new pretty_dumper(&m);
+	else if (output_language == "c")
+		d = new c_dumper(&m);
+	else
+	{
+		cerr << "FATAL ERROR: Unsupported output language, abort" << endl;
+		abort();
+	}
+
 
 	if (output_filename == "")
-		d.dump(cout);
+		d->dump(cout);
 	else
 	{
 		fstream fout(output_filename.c_str(), fstream::out);
-		d.dump(fout);
+		d->dump(fout);
 	}
 
+	delete d;
 	delete root;
 
 }
