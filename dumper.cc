@@ -143,55 +143,56 @@ void c_dumper::set_macro_again(const std::string &name)
 
 void c_dumper::dump_state(ostream &os, dfa_state *s)
 {
-	os << "\tcase " << s->get_id() << ":\n"
-	   << "\t\t{\n";
+	os << "lsg_" << s->get_id() << ":\n";
 
 	const map<unsigned, dfa_state*> &m = s->get_transit_table();
 	map<unsigned, dfa_state*>::const_iterator i;
 
+	if (m.empty())
+		return ;
+
 	bool have_next_input = m.begin()->first < LSG_NONE;
-	bool have_satisfy_rule = m.end()->first > LSG_NONE;
+	bool have_satisfy_rule = m.rbegin()->first > LSG_NONE;
 
 	if (have_next_input)
 	{
-		os << "\t\t\tint input = " << m_get_input
+		os << "{\n";
+		os << " int input = " << m_get_input
 		   << "(" << m_ctx << ");\n";
 
-		os << "\t\t\tif (input < 0)\n"
-		   << "\t\t\t{\n";
+		/* If input is unavailable */
+		os << " if (input < 0) {\n"
+		   << "  " << m_set_state
+		   << "(" << m_ctx << ", state);\n"
+		   << "  " << m_again
+		   << "(" << m_ctx << ");\n"
+		   << " }\n";
 
-		os << "\t\t\t\t" << m_set_state
-		   << "(" << m_ctx << ", state);\n";
-
-		os << "\t\t\t\t" << m_again
-		   << "(" << m_ctx << ");\n";
-
-		os << "\t\t\t}\n";
-
-		os << "\t\t\tswitch(input)\n"
-		   << "\t\t\t{\n";
+		os << " switch(input) {\n";
 
 		for (i = m.begin(); i != m.end(); ++i)
 		{
 			if (i->first < LSG_NONE)
 			{
-				os << "\t\t\tcase " << i->first << ":\n"
-				   << "\t\t\t\t" << m_shift_input
+				os << " case " << i->first << ":\n";
+
+				os << "  " << m_shift_input
 				   << "(" << m_ctx << ");\n";
 
-				os << "\t\t\t\tstate = " << i->second->get_id() << ";\n";
-				os << "\t\t\t\tbreak;\n";
+				os << "  goto lsg_" << i->second->get_id() << ";\n";
+
+				os << "  break;\n";
 			}
 			else
 			{
 				// Handle this rule
-				os << "\t\t\tdefault:\n"
-				   << "\t\t\t\t" << m_satisfy_rule
+				os << " default:\n"
+				   << "  " << m_satisfy_rule
 				   << "(" << m_ctx << ", " << i->first - LSG_RULE_ID_START
 				   << ");\n";
 
 				/* Reset state */
-				os << "\t\t\t\tstate = 0;\n";
+				os << "  goto lsg_start;\n";
 				break;
 			}
 		}
@@ -199,20 +200,19 @@ void c_dumper::dump_state(ostream &os, dfa_state *s)
 		if (!have_satisfy_rule)
 		{
 			// ERROR HERE
-			os << "\t\t\tdefault:\n" << "\t\t\t\tstate = 0;\n";
+			os << " default:\n" << "  goto lsg_start;";
 
 		}
-		os << "\t\t\t}\n";
+
+		os << " }\n";
+		os << "}\n";
 	}
 	else
 	{
-		os << "\t\t\t" << m_satisfy_rule << "("
+		os << " " << m_satisfy_rule << "("
 		   << m_ctx << ", " << m.begin()->first  - LSG_RULE_ID_START << ");\n";
-		os << "\t\t\tstate = 0;\n";
+		os << " goto lsg_start;\n";
 	}
-
-	os << "\t\t}\n"
-	   << "\t\tbreak;\n";
 
 }
 
@@ -225,16 +225,21 @@ void c_dumper::dump_prolog(ostream &os, unsigned state_count)
 	os << "int state = " << m_get_state
 	   << "(" << m_ctx << ");\n";
 
-	os << "for ( ; ; ) \n{\n";
+	os << "switch(state) {\n";
 
+	for (int i = 0; i < state_count; i++)
+	{
+		os << "case " << i << ": goto lsg_" << i << ";\n";
+	}
 
-	os << "\tswitch(state)\n"
-	   << "\t{\n";
+	os << "}\n";
+
+	os << "lsg_start:\n";
 }
 
 void c_dumper::dump_postscript(ostream &os)
 {
-	os << "\t}\n";
+	os << "}"; // End of scanner function
 
 	// End of subblock
 	os << "}\n";
