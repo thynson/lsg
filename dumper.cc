@@ -207,7 +207,7 @@ void c_dumper::dump_state(ostream &os, dfa_state *s)
 	else
 	{
 		os << "\t\t\t" << m_satisfy_rule << "("
-		   << m_ctx << ", " << m.begin()->first << ");\n";
+		   << m_ctx << ", " << m.begin()->first  - LSG_RULE_ID_START << ");\n";
 		os << "\t\t\tstate = 0;\n";
 	}
 
