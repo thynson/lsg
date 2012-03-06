@@ -102,7 +102,7 @@ c_dumper::c_dumper(dfa_machine *m)
 	, m_self("LSG_SELF")
 	, m_ctx("LSG_CTX")
 	, m_get_input("LSG_GET_INPUT")
-	, m_shift_input("LSG_SHIFT_INPUT")
+	, m_unget_input("LSG_UNGET_INPUT")
 	, m_satisfy_rule("LSG_SATISFY_RULE")
 	, m_get_state("LSG_GET_STATE")
 	, m_set_state("LSG_SET_STATE")
@@ -119,9 +119,9 @@ void c_dumper::set_var_ctx(const std::string &name)
 	m_ctx = name;
 }
 
-void c_dumper::set_func_shift_input(const std::string &name)
+void c_dumper::set_func_unget_input(const std::string &name)
 {
-	m_shift_input = name;
+	m_unget_input = name;
 }
 
 void c_dumper::set_func_satisfy_rule(const std::string &name)
@@ -179,9 +179,6 @@ void c_dumper::dump_state(ostream &os, dfa_state *s)
 			{
 				os << " case " << i->first << ":\n";
 
-				os << "  " << m_shift_input
-				   << "(" << m_ctx << ");\n";
-
 				os << "  goto lsg_" << i->second->get_id() << ";\n";
 
 				os << "  break;\n";
@@ -190,6 +187,7 @@ void c_dumper::dump_state(ostream &os, dfa_state *s)
 			{
 				// Handle this rule
 				os << " default:\n"
+				   << "  " << m_unget_input << "(" << m_ctx << ", input);\n"
 				   << "  " << m_satisfy_rule
 				   << "(" << m_ctx << ", " << i->first - LSG_RULE_ID_START
 				   << ");\n";
@@ -203,7 +201,9 @@ void c_dumper::dump_state(ostream &os, dfa_state *s)
 		if (!have_satisfy_rule)
 		{
 			// ERROR HERE
-			os << " default:\n" << "  goto lsg_start;";
+			os << " default:\n"
+			   << "  " << m_unget_input << "(" << m_ctx << ", input);\n"
+			   << "  goto lsg_start;";
 
 		}
 

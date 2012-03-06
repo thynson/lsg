@@ -54,7 +54,7 @@ namespace lsg
 		virtual ~c_dumper();
 		void set_var_ctx(const std::string &name);
 		void set_func_get_input(const std::string &name);
-		void set_func_shift_input(const std::string &name);
+		void set_func_unget_input(const std::string &name);
 		void set_func_satisfy_rule(const std::string &name);
 		void set_func_set_state(const std::string &name);
 		void set_func_get_state(const std::string &name);
@@ -79,9 +79,9 @@ namespace lsg
 		// Default to "LSG_GET_INPUT" (ctx)
 		std::string m_get_input;
 
-		// Default to "LSG_SHIFT_INPUT"(ctx)
+		// Default to "LSG_UNGET_INPUT"(ctx)
 		// Shift the last input
-		std::string m_shift_input;
+		std::string m_unget_input;
 
 		// Default to "LSG_SATISFY_RULE" (ctx, RULEID)
 		std::string m_satisfy_rule;
