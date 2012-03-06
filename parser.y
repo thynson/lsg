@@ -20,6 +20,9 @@ stack<dfa_node*> node_stack;
 stack<string> id_stack;
 map<string, dfa_node*> define_map;
 map<string, dfa_node*> export_map;
+map<string, unsigned> rule_map;
+
+int rule_id;
 
 int yyerror(const char*);
 
@@ -90,6 +93,8 @@ export: LSG_TK_EXPORT id regexp_wrap LSG_TK_LF
 	}
 
 	node_stack.pop();
+
+	rule_map.insert(make_pair(id, rule_id++));
 	export_map.insert(make_pair(id, node));
 }
 
@@ -252,19 +257,13 @@ namespace lsg
 	{
 		yyparse();
 		dfa_node *root = NULL;
-		unsigned int rule_id = LSG_RULE_ID_START;
-
-		map<unsigned, string> rule_map;
 
 		for (map<string, dfa_node*>::iterator i = export_map.begin();
 			 i != export_map.end(); ++i)
 		{
-
-			// Dummy node is used to identify accept state
-
-			dfa_leaf_node *dummy = new dfa_leaf_node(rule_id);
+			int rid = LSG_RULE_ID_START + rule_map[i->first];
+			dfa_leaf_node *dummy = new dfa_leaf_node(rid);
 			dfa_cat_node *handle = new dfa_cat_node(i->second, dummy);
-			rule_map.insert(make_pair(rule_id++, i->first));
 
 			if (root == NULL)
 			{
