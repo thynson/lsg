@@ -64,6 +64,15 @@ namespace lsg
 		virtual void dump_prolog(std::ostream &os, unsigned state_count);
 		virtual void dump_postscript(std::ostream &os);
 
+		// int
+		std::string m_type_return;
+
+		// LSG_TYPE
+		std::string m_type_param;
+
+		// LSG_SELF
+		std::string m_self;
+
 		// Default "LSG_CTX"
 		std::string m_ctx;
 
