@@ -256,6 +256,11 @@ namespace lsg
 	void start_parse(dfa_node **root, map<string, unsigned> *p_rule_map)
 	{
 		yyparse();
+		if (export_map.empty())
+		{
+			cerr << "No rule exported\n" << endl;
+			exit(EXIT_FAILURE);
+		}
 		*root = NULL;
 		*p_rule_map = rule_map;
 
