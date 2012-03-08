@@ -36,6 +36,7 @@ namespace
 		CO_START = 256, // Not in use, just make value of follow flags larger
 		CO_INPUT,
 		CO_OUTPUT,
+		CO_OUTPUT_HEADER,
 		CO_LANG,
 		CO_VERSION,
 		CO_HELP
@@ -44,10 +45,12 @@ namespace
 	string output_filename("");
 	string input_filename("");
 	string output_language("pretty");
+	string output_header("header");
 
 	const struct option long_opts[] = {
 		{"input", 1, NULL, CO_INPUT},
 		{"output", 1, NULL, CO_OUTPUT},
+		{"output-header", 1, NULL, CO_OUTPUT_HEADER},
 		{"lang", 1, NULL, CO_LANG},
 		{"version", 0, NULL, CO_VERSION},
 		{"help", 0, NULL, CO_HELP},
@@ -64,6 +67,9 @@ namespace
 		cout << basename(name) << " usage:" << endl
 			 << " -i FILE --input=FILE    Read from FILE other than stdin\n"
 			 << " -o FILE --output=FILE   Output to FILE other than stdout\n"
+			 << " -H HEADER --output-header=HEADER\n"
+			 << "                         Export symbol to HEADER, only\n"
+			 << "                         available when dump with LANG=c\n"
 			 << " -l LANG --output=LANG   Dump in LANG language\n"
 			 << "                         LANG can be (pretty, c)\n"
 			 << " -v --version            Show version\n"
@@ -100,7 +106,8 @@ namespace
 		for ( ; ; )
 		{
 			int optidx;
-			int ret = getopt_long(argc, argv, "i:o:l:vh", long_opts, &optidx);
+			int ret = getopt_long(argc, argv, "i:o:H:l:vh",
+								  long_opts, &optidx);
 
 			switch(ret)
 			{
@@ -112,6 +119,11 @@ namespace
 			case 'o':
 			case CO_OUTPUT:
 				output_filename = optarg;
+				break;
+
+			case 'H':
+			case CO_OUTPUT_HEADER:
+				output_header = optarg;
 				break;
 
 			case 'l':
