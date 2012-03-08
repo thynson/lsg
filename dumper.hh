@@ -50,7 +50,7 @@ namespace lsg
 	class c_dumper : public dumper
 	{
 	public:
-		c_dumper(dfa_machine *m);
+		c_dumper(dfa_machine *m, const std::map<std::string, unsigned> &rm);
 		virtual ~c_dumper();
 		void set_var_ctx(const std::string &name);
 		void set_func_get_input(const std::string &name);
@@ -63,6 +63,8 @@ namespace lsg
 		virtual void dump_state(std::ostream &os, dfa_state *s);
 		virtual void dump_prolog(std::ostream &os, unsigned state_count);
 		virtual void dump_postscript(std::ostream &os);
+
+		std::map<std::string, unsigned> m_rule_map;
 
 		// int
 		std::string m_type_return;

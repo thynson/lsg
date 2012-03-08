@@ -178,7 +178,7 @@ int main(int argc, char **argv)
 	if (output_language == "pretty")
 		d = new pretty_dumper(&m);
 	else if (output_language == "c")
-		d = new c_dumper(&m);
+		d = new c_dumper(&m, rule_map);
 	else
 	{
 		cerr << "FATAL ERROR: Unsupported output language, abort" << endl;

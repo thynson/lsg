@@ -95,8 +95,9 @@ void pretty_dumper::dump_postscript(std::ostream &os)
 
 }
 
-c_dumper::c_dumper(dfa_machine *m)
+c_dumper::c_dumper(dfa_machine *m, const map<string, unsigned> &rm)
 	: dumper(m)
+	, m_rule_map(rm)
 	, m_type_return("int")
 	, m_type_param("LSG_TYPE")
 	, m_self("LSG_SELF")
