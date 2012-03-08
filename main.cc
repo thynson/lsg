@@ -45,7 +45,7 @@ namespace
 	string output_filename("");
 	string input_filename("");
 	string output_language("pretty");
-	string output_header("header");
+	string output_header("");
 
 	const struct option long_opts[] = {
 		{"input", 1, NULL, CO_INPUT},
@@ -178,7 +178,15 @@ int main(int argc, char **argv)
 	if (output_language == "pretty")
 		d = new pretty_dumper(&m);
 	else if (output_language == "c")
-		d = new c_dumper(&m, rule_map);
+	{
+		c_dumper *c = new c_dumper(&m, rule_map);
+		if (output_header != "")
+		{
+			fstream fheader(output_header.c_str(), fstream::out);
+			c->dump_header(fheader);
+		}
+		d = c;
+	}
 	else
 	{
 		cerr << "FATAL ERROR: Unsupported output language, abort" << endl;

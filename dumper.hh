@@ -52,6 +52,7 @@ namespace lsg
 	public:
 		c_dumper(dfa_machine *m, const std::map<std::string, unsigned> &rm);
 		virtual ~c_dumper();
+		void dump_header(std::ostream &os);
 		void set_var_ctx(const std::string &name);
 		void set_func_get_input(const std::string &name);
 		void set_func_unget_input(const std::string &name);
