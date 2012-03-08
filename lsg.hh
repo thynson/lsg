@@ -30,7 +30,7 @@ namespace lsg {
 		LSG_RULE_ID_START = 257
 	};
 	void lexer_set_stream(FILE *stream);
-	dfa_node *start_parse();
+	void start_parse(dfa_node **root, std::map<std::string, unsigned> *pm);
 }
 
 #endif

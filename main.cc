@@ -165,7 +165,11 @@ int main(int argc, char **argv)
 		fin = fopen(input_filename.c_str(), "r");
 
 	lexer_set_stream(fin);
-	dfa_node *root = start_parse();
+
+	dfa_node *root;
+	map<string, unsigned> rule_map;
+
+	start_parse(&root, &rule_map);
 
 	dfa_machine m(root);
 

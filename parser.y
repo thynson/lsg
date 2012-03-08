@@ -253,10 +253,11 @@ int yyerror(const char *)
 
 namespace lsg
 {
-	dfa_node *start_parse()
+	void start_parse(dfa_node **root, map<string, unsigned> *p_rule_map)
 	{
 		yyparse();
-		dfa_node *root = NULL;
+		*root = NULL;
+		*p_rule_map = rule_map;
 
 		for (map<string, dfa_node*>::iterator i = export_map.begin();
 			 i != export_map.end(); ++i)
@@ -265,15 +266,15 @@ namespace lsg
 			dfa_leaf_node *dummy = new dfa_leaf_node(rid);
 			dfa_cat_node *handle = new dfa_cat_node(i->second, dummy);
 
-			if (root == NULL)
+			if (*root == NULL)
 			{
-				root = handle;
+				*root = handle;
 			}
 			else
 			{
-				root = new dfa_or_node(root, handle);
+				*root = new dfa_or_node(*root, handle);
 			}
 		}
-		return root;
 	}
+
 }
