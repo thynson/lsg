@@ -65,7 +65,7 @@ namespace lsg
 		: m_follow_nodes()
 		, m_input(input)
 	{
-		if (input != 0)
+		if (input != LSG_NONE)
 		{
 			add_first_node(this);
 			add_last_node(this);
