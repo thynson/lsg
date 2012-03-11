@@ -41,22 +41,22 @@ namespace lsg
 		return m_last_set;
 	}
 
-	void dfa_node::add_first_node(const leaf_set_t &s)
+	void dfa_node::add_first_node(const leaf_set_t &s) const
 	{
 		m_first_set.insert(s.begin(), s.end());
 	}
 
-	void dfa_node::add_first_node(const dfa_leaf_node *n)
+	void dfa_node::add_first_node(const dfa_leaf_node *n) const
 	{
 		m_first_set.insert(n);
 	}
 
-	void dfa_node::add_last_node(const leaf_set_t &s)
+	void dfa_node::add_last_node(const leaf_set_t &s) const
 	{
 		m_last_set.insert(s.begin(), s.end());
 	}
 
-	void dfa_node::add_last_node(const dfa_leaf_node *n)
+	void dfa_node::add_last_node(const dfa_leaf_node *n) const
 	{
 		m_last_set.insert(n);
 	}
@@ -81,7 +81,7 @@ namespace lsg
 		return m_follow_nodes;
 	}
 
-	void dfa_leaf_node::add_follow_node(const leaf_set_t &l)
+	void dfa_leaf_node::add_follow_node(const leaf_set_t &l) const
 	{
 		m_follow_nodes.insert(l.begin(), l.end());
 	}
@@ -111,7 +111,7 @@ namespace lsg
 		for (leaf_set_t::iterator i = l.begin();
 			 i != l.end(); ++i)
 		{
-			const_cast<dfa_leaf_node*>((*i))->add_follow_node(r);
+			(*i)->add_follow_node(r);
 		}
 
 		add_first_node(m_former->get_first_nodes());
@@ -182,7 +182,7 @@ namespace lsg
 		for (leaf_set_t::iterator i = l.begin();
 			 i != l.end(); ++i)
 		{
-			const_cast<dfa_leaf_node*>((*i))->add_follow_node(r);
+			(*i)->add_follow_node(r);
 		}
 
 		add_first_node(r);

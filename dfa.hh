@@ -57,15 +57,15 @@ namespace lsg
 		// @brief Constructor
 		dfa_node();
 
-		void add_first_node(const dfa_leaf_node *n);
-		void add_first_node(const leaf_set_t &s);
+		void add_first_node(const dfa_leaf_node *n) const;
+		void add_first_node(const leaf_set_t &s) const;
 
-		void add_last_node(const dfa_leaf_node *n);
-		void add_last_node(const leaf_set_t &s);
+		void add_last_node(const dfa_leaf_node *n) const;
+		void add_last_node(const leaf_set_t &s) const;
 
 	private:
-		leaf_set_t m_first_set;
-		leaf_set_t m_last_set;
+		mutable leaf_set_t m_first_set;
+		mutable leaf_set_t m_last_set;
 	};
 
 	// @brief Stand for a DFA AST leaf node
@@ -81,13 +81,13 @@ namespace lsg
 
 		// @brief Add follow node for this node
 		// @param l Ths set of additional possible follow nodes
-		void add_follow_node(const leaf_set_t &l);
+		void add_follow_node(const leaf_set_t &l) const;
 
 		unsigned get_input() const;
 
 		virtual dfa_node *clone() const;
 	private:
-		leaf_set_t m_follow_nodes;
+		mutable leaf_set_t m_follow_nodes;
 		unsigned m_input;
 	};
 
