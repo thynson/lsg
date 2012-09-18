@@ -71,28 +71,29 @@ namespace lsg
 
 				map<unsigned, leaf_set_t*> m;
 
-
-
 				// Merge by input
 				for (leaf_set_t::iterator i = s->begin();
 					 i != s->end(); ++i)
 				{
 					const dfa_leaf_node *leaf_node = *i;
-
-					// A leaf node is either a dfa_none_node or dfa_match_node
-					// So if it's nullable, it must be a dfa_none_node
-					if (leaf_node->is_nullable())
-						continue;
-
-					unsigned input = leaf_node->get_input();
 					const leaf_set_t &ref = leaf_node->get_follow_node();
+					set<unsigned> input_set;
 
-					if (m.find(input) == m.end())
+					leaf_node->get_input(input_set);
+
+					for (set<unsigned>::iterator j = input_set.begin();
+						j != input_set.end();  ++j)
 					{
-						leaf_set_t *follow_list = new leaf_set_t(ref);
-						m.insert(make_pair(input, follow_list));
-					} else {
-						m[input]->insert(ref.begin(), ref.end());
+						if (m.find(*j) == m.end())
+						{
+							leaf_set_t *follow_list = new leaf_set_t(ref);
+							m.insert(make_pair(*j, follow_list));
+						}
+						else
+						{
+							m[*j]->insert(ref.begin(), ref.end());
+						}
+
 					}
 				}
 

@@ -72,22 +72,42 @@ namespace lsg
 	class dfa_leaf_node : public dfa_node
 	{
 	public:
-		dfa_leaf_node(unsigned input);
+		dfa_leaf_node(bool nullable);
 		virtual ~dfa_leaf_node();
 
 		const leaf_set_t &get_follow_node() const;
-
-		virtual bool is_nullable() const;
 
 		// @brief Add follow node for this node
 		// @param l Ths set of additional possible follow nodes
 		void add_follow_node(const leaf_set_t &l) const;
 
-		unsigned get_input() const;
+		virtual void get_input(std::set<unsigned> &set) const = 0;
+		virtual bool is_nullable() const;
 
-		virtual dfa_node *clone() const;
 	private:
 		mutable leaf_set_t m_follow_nodes;
+		bool m_nullable;
+	};
+
+	// @brief A leaf node accept void
+	class dfa_none_node : public dfa_leaf_node
+	{
+	public:
+		dfa_none_node();
+		virtual ~dfa_none_node();
+		virtual void get_input(std::set<unsigned> &set) const;
+		virtual dfa_node *clone() const;
+	};
+
+	// @brief A leaf node accept an input
+	class dfa_input_node : public dfa_leaf_node
+	{
+	public:
+		dfa_input_node(unsigned input);
+		virtual ~dfa_input_node();
+		virtual void get_input(std::set<unsigned> &set) const;
+		virtual dfa_node *clone() const;
+	private:
 		unsigned m_input;
 	};
 

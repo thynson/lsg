@@ -145,14 +145,14 @@ node: single LSG_TK_PLUS
 {
 	dfa_node *lhs = node_stack.top();
 	node_stack.pop();
-	dfa_or_node *branch = new dfa_or_node(lhs, new dfa_leaf_node(LSG_NONE));
+	dfa_or_node *branch = new dfa_or_node(lhs, new dfa_none_node());
 	node_stack.push(branch);
 }
 	| single
 
 single: LSG_TK_CHAR
 {
-	dfa_leaf_node *node = new dfa_leaf_node(yytext[0]);
+	dfa_leaf_node *node = new dfa_input_node(yytext[0]);
 	node_stack.push(node);
 }
 	| LSG_TK_ESCAPE
@@ -185,7 +185,7 @@ single: LSG_TK_CHAR
 
 	if (input > 0)
 	{
-		dfa_leaf_node *node = new dfa_leaf_node(input);
+		dfa_leaf_node *node = new dfa_input_node(input);
 		node_stack.push(node);
 	}
 	else
@@ -199,7 +199,7 @@ single: LSG_TK_CHAR
 	s << hex << '0' << (yytext+1);
 	int input;
 	s >> input;
-	dfa_leaf_node *node = new dfa_leaf_node(input);
+	dfa_leaf_node *node = new dfa_input_node(input);
 	node_stack.push(node);
 }
 	| LSG_TK_ESCAPE_OCT
@@ -208,13 +208,13 @@ single: LSG_TK_CHAR
 	s << oct << (yytext+1);
 	int input;
 	s >> input;
-	dfa_leaf_node *node = new dfa_leaf_node(input);
+	dfa_leaf_node *node = new dfa_input_node(input);
 	node_stack.push(node);
 }
 	| LSG_TK_ESCAPE_ALL
 {
 	int input = yytext[1];
-	dfa_leaf_node *node = new dfa_leaf_node(input);
+	dfa_leaf_node *node = new dfa_input_node(input);
 	node_stack.push(node);
 }
 	| LSG_TK_LP regexp LSG_TK_RP
@@ -268,7 +268,7 @@ namespace lsg
 			 i != export_map.end(); ++i)
 		{
 			int rid = LSG_RULE_ID_START + rule_map[i->first];
-			dfa_leaf_node *dummy = new dfa_leaf_node(rid);
+			dfa_leaf_node *dummy = new dfa_input_node(rid);
 			dfa_cat_node *handle = new dfa_cat_node(i->second, dummy);
 
 			if (*root == NULL)

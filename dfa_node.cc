@@ -61,11 +61,11 @@ namespace lsg
 		m_last_set.insert(n);
 	}
 
-	dfa_leaf_node::dfa_leaf_node(unsigned input)
+	dfa_leaf_node::dfa_leaf_node(bool nullable)
 		: m_follow_nodes()
-		, m_input(input)
+		, m_nullable(nullable)
 	{
-		if (input != LSG_NONE)
+		if (!nullable)
 		{
 			add_first_node(this);
 			add_last_node(this);
@@ -88,17 +88,45 @@ namespace lsg
 
 	bool dfa_leaf_node::is_nullable() const
 	{
-		return m_input == LSG_NONE;
+		return m_nullable;
 	}
 
-	unsigned dfa_leaf_node::get_input() const
+	dfa_none_node::dfa_none_node()
+		: dfa_leaf_node(true)
 	{
-		return m_input;
 	}
 
-	dfa_node *dfa_leaf_node::clone() const
+	dfa_none_node::~dfa_none_node()
 	{
-		return new dfa_leaf_node(m_input);
+	}
+
+	void dfa_none_node::get_input(set<unsigned> &set) const
+	{
+	}
+
+	dfa_node *dfa_none_node::clone() const
+	{
+		return new dfa_none_node();
+	}
+
+	dfa_input_node::dfa_input_node(unsigned input)
+		: dfa_leaf_node(false)
+		, m_input(input)
+	{
+	}
+
+	dfa_input_node::~dfa_input_node()
+	{
+	}
+
+	void dfa_input_node::get_input(set<unsigned> &s) const
+	{
+		s.insert(m_input);
+	}
+
+	dfa_node *dfa_input_node::clone() const
+	{
+		return new dfa_input_node(m_input);
 	}
 
 	dfa_cat_node::dfa_cat_node(dfa_node *former, dfa_node *latter)
