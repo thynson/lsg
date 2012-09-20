@@ -31,7 +31,8 @@ namespace lsg
 		void dump(std::ostream &os);
 	private:
 		virtual void dump_state(std::ostream &os, dfa_state *s) = 0;
-		virtual void dump_prolog(std::ostream &os, unsigned state_count) = 0;
+		virtual void dump_prolog(std::ostream &os,
+				                 const std::vector<dfa_state*> &vs) = 0;
 		virtual void dump_postscript(std::ostream &os) = 0;
 		dfa_machine *m_machine;
 	};
@@ -43,7 +44,8 @@ namespace lsg
 		virtual ~pretty_dumper();
 	private:
 		virtual void dump_state(std::ostream &os, dfa_state *s);
-		virtual void dump_prolog(std::ostream &os, unsigned state_count);
+		virtual void dump_prolog(std::ostream &os,
+				                 const std::vector<dfa_state*> &vs);
 		virtual void dump_postscript(std::ostream &os);
 	};
 
@@ -62,41 +64,11 @@ namespace lsg
 		void set_macro_again(const std::string &name);
 	private:
 		virtual void dump_state(std::ostream &os, dfa_state *s);
-		virtual void dump_prolog(std::ostream &os, unsigned state_count);
+		virtual void dump_prolog(std::ostream &os,
+				                 const std::vector<dfa_state*> &vs);
 		virtual void dump_postscript(std::ostream &os);
 
 		std::map<std::string, unsigned> m_rule_map;
-
-		// int
-		std::string m_type_return;
-
-		// LSG_TYPE
-		std::string m_type_param;
-
-		// LSG_SELF
-		std::string m_self;
-
-		// Default "LSG_CTX"
-		std::string m_ctx;
-
-		// Default to "LSG_GET_INPUT" (ctx)
-		std::string m_get_input;
-
-		// Default to "LSG_UNGET_INPUT"(ctx)
-		// Shift the last input
-		std::string m_unget_input;
-
-		// Default to "LSG_SATISFY_RULE" (ctx, RULEID)
-		std::string m_satisfy_rule;
-
-		// LSG_GET_STATE(ctx)
-		std::string m_get_state;
-
-		// LSG_SET_STATE(ctx, state)
-		std::string m_set_state;
-
-		// LSG_AGAIN(ctx)
-		std::string m_again;
 	};
 
 }
