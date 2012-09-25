@@ -44,10 +44,11 @@ dist-hook:
 # will cause cyclic dependency. But we could see that for parser.cc and
 # lexer.cc, the essential depending target is parser.y and lexer.l.
 parser.cc parser.h: parser.y lexer.l
-	$(YACC) --defines=parser.h -o parser.cc $<
+	$(AM_V_GEN)$(YACC) -o parser.cc --defines=parser.h $<
 
 lexer.cc lexer.h: lexer.l parser.y
-	$(LEX) --header-file=lexer.h -o lexer.cc $<
+	$(AM_V_GEN)$(LEX) -o lexer.cc --header-file=lexer.h $<
+
 parser.o: parser.cc lexer.h parser.h
 lexer.o: lexer.cc lexer.h parser.h
 
